@@ -1,4 +1,6 @@
 import { u1 } from './times';
+import { Observable } from 'rxjs';
+import 'rxjs/add/observable/of';
 export class TimesService {
     
     constructor() {}
@@ -49,24 +51,24 @@ export class TimesService {
     }
 
     createStopTime(timeReturn, times) {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    let stopTime;
-        if(parseInt(timeReturn.substring(0,2)) < 6) {
-            stopTime = new Date(year, month, day+1, timeReturn.substring(0,2), timeReturn.substring(2,4));
-        } else {
-            stopTime = new Date(year, month, day, timeReturn.substring(0,2), timeReturn.substring(2,4));
-        }
-    return {
-        destination: times===u1?"Portsmouth University":"Langstone Campus",
-        service: times===u1?"U1":"U2",
-        time: stopTime.getHours() + ":" + ((stopTime.getMinutes()<10)?("0"+stopTime.getMinutes().toString()):(stopTime.getMinutes().toString())),
-        eta: Math.round((stopTime.getTime() - date.getTime())/1000/60).toString() + "",
-        etatime: stopTime.getMinutes()<59?"mins":"hours",
-        timeValue: stopTime
-    };
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDate();
+        let stopTime;
+            if(parseInt(timeReturn.substring(0,2)) < 6) {
+                stopTime = new Date(year, month, day+1, timeReturn.substring(0,2), timeReturn.substring(2,4));
+            } else {
+                stopTime = new Date(year, month, day, timeReturn.substring(0,2), timeReturn.substring(2,4));
+            }
+        return {
+            destination: times===u1?"Portsmouth University":"Langstone Campus",
+            service: times===u1?"U1":"U2",
+            time: stopTime.getHours() + ":" + ((stopTime.getMinutes()<10)?("0"+stopTime.getMinutes().toString()):(stopTime.getMinutes().toString())),
+            eta: Math.round((stopTime.getTime() - date.getTime())/1000/60).toString() + "",
+            etatime: stopTime.getMinutes()<59?"mins":"hours",
+            timeValue: stopTime
+        };
     }
 
     getStopTimes(lngString, times) { //input parameter is string of times for stop
@@ -82,28 +84,27 @@ export class TimesService {
         i = i+3;
         //timesArray[x] = null;
         //x++;
-        } else if(typeof(lngString.charAt(i)===Number)) {
-        //checks if number and output the next 4 characters and set the index +4
-        let timeReturn = (lngString.substring(i, i+4));
-        i = i+3;
-        
-        timesArray[x] = this.createStopTime(timeReturn, times);
-        x++
+        } else if(!(isNaN(lngString.charAt(i)))) {
+            //checks if number and output the next 4 characters and set the index +4
+            let timeReturn = (lngString.substring(i, i+4));
+            i = i+3;
+            
+            timesArray[x] = this.createStopTime(timeReturn, times);
+            x++
 
         } else if(lngString.charAt(i)=="!"){
         break;
         }
     }
-    console.log(timesArray);
+    //console.log(timesArray);
     while(timesArray[0]===null||(timesArray[0]?timesArray[0].timeValue.getTime() < (date.getTime()+60000):false))  {
         timesArray.shift();
     }
-    
-    return timesArray;
+    //console.log(timesArray);
+    return Observable.of(timesArray);
     }
 
     getAllTimes(id) {
-    console.log("ysssssss")
     const x = this.getTimes(id, u1);
     const y = this.getTimes(id, u2);
     this.thing = forkJoin([x, y]).subscribe(result => {
@@ -118,7 +119,7 @@ export class TimesService {
         let sortedTimes = this.mergeSortedArray(result[0], result[1]);
         this.nextMergedTimes.next(sortedTimes);
         this.updateServiceTimes(sortedTimes, "u1u2");
-        console.log(sortedTimes);
+        //console.log(sortedTimes);
     });
     }
     getU2Times(id) {

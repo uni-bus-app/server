@@ -15,16 +15,18 @@ router.get('/gettimes', function(req, res, next) {
   //readDB();
   const times = new TimesService();
 
-  let thing = times.getLongString("a", u1);
+  let thing = times.getLongString(req.param("stopid"), u1);
 
-  console.log(thing)
+  //console.log(thing)
 
 
-  const object = times.getStopTimes(thing, u1);
+  times.getStopTimes(thing, u1).subscribe(result => {
+    res.send(result);
+  });
 
-  console.log(object);
+  //console.log(object);
 
-  res.send(object);
+  //res.send(object);
 
 });
 
