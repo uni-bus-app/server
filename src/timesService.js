@@ -65,9 +65,9 @@ export class TimesService {
             destination: times===u1?"Portsmouth University":"Langstone Campus",
             service: times===u1?"U1":"U2",
             time: stopTime.getHours() + ":" + ((stopTime.getMinutes()<10)?("0"+stopTime.getMinutes().toString()):(stopTime.getMinutes().toString())),
-            eta: Math.round((stopTime.getTime() - date.getTime())/1000/60).toString() + "",
+            eta: Math.round((stopTime.getTime() - date.getTime())/1000/60).toString(),
             etatime: stopTime.getMinutes()<59?"mins":"hours",
-            timeValue: stopTime
+            timeValue: stopTime.getTime()
         };
     }
 
@@ -97,12 +97,30 @@ export class TimesService {
         }
     }
     //console.log(timesArray);
-    while(timesArray[0]===null||(timesArray[0]?timesArray[0].timeValue.getTime() < (date.getTime()+60000):false))  {
+    while(timesArray[0]===null||(timesArray[0]?timesArray[0].timeValue < (date.getTime()+60000):false))  {
         timesArray.shift();
+    }
+    for(let time of timesArray) {
+        time = this.formatTime(time, date);
     }
     //console.log(timesArray);
     return Observable.of(timesArray);
     }
+
+    formatTime(time, currentTime) {
+        time.eta = Math.round(((time.timeValue - currentTime.getTime())/1000/60)).toString();
+        time.etatime = "mins"
+        if(parseInt(time.eta) < 2) {
+          time.eta = "Now";
+          time.etatime = null;
+        } else if(parseInt(time.eta) == 60) {
+          time.eta = "1";
+          time.etatime = "hour"
+        } else if(parseInt(time.eta) > 60) {
+          time.eta = ((time.timeValue - currentTime.getTime())/1000/60/60).toFixed(1);
+          time.etatime = "hours";
+        }
+      }
 
     getAllTimes(id) {
     const x = this.getTimes(id, u1);
