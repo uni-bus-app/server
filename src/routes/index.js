@@ -51,14 +51,14 @@ router.post('/uploadtimes', function(req, res, next) {
 
 router.get('/adduser', function(req, res, next) {
 
-  account.addUser(req.param("email")).subscribe(result => {
+  account.addUser(req.param("email"), req.param("id")).subscribe(result => {
     console.log(result);
   });
 
 });
 
 router.get('/listusers', function(req, res, next) {
-  account.listUsers().subscribe(result => {
+  account.listUsers(req.param("id")).subscribe(result => {
     res.send(result);
   });
 });
@@ -68,7 +68,7 @@ router.get('/test', function(req, res, next) {
 });
 
 router.get('/deleteuser', function(req, res, next) {
-  account.deleteUser(req.param("uid")).subscribe(data => {res.send(data)});
+  account.deleteUser(req.param("uid"), req.param("id")).subscribe(data => {res.send(data)});
 });
 
 export default router;
