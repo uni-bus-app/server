@@ -3,6 +3,7 @@ import cors from 'cors';
 import { IncomingForm } from 'formidable';
 import { TimesService } from "../timesService";
 import { u1 } from '../times'
+import { Account } from '../account';
 //import { Database } from "../db";
 const router = express.Router().use(cors());
 const UoPDF = require('uopdf');
@@ -51,6 +52,15 @@ router.post('/uploadtimes', function(req, res, next) {
     res.json();
   })
   form.parse(req);
+});
+
+router.get('/adduser', function(req, res, next) {
+  const account = new Account();
+
+  account.addUser(req.param("email")).subscribe(result => {
+    console.log(result);
+  });
+
 });
 
 export default router;
