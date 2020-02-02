@@ -28,7 +28,8 @@
     "rimraf": "^2.6.3",
     "rxjs": "^6.5.4",
     "rxjs-compat": "^6.5.4",
-    "uopdf": "https://github.com/MiscellaneousStuff/UoPDF.git"
+    "uopdates": "file:../UoPDates",
+    "uopdf": "git+https://github.com/MiscellaneousStuff/UoPDF.git"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

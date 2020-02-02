@@ -28,4 +28,30 @@ export class Account {
             });
         });
     }
+
+    listUsers() {
+        return Observable.create(observer => {
+            admin.auth().listUsers(1000)
+                .then(listUsersResults => {
+                    observer.next(listUsersResults);
+                })
+                .catch(error => {
+                    console.log("error listening uers")
+                    observer.next(null);
+                })
+        })
+    }
+
+    deleteUser(uid) {
+        return Observable.create(observer => {
+            admin.auth().deleteUser(uid)
+                .then(() => {
+                    observer.next({"message": "Successfully deleted"});
+                })
+                .catch(error => {
+                    observer.next({"message": "Error deleting user: "+error});
+                })
+        })
+        
+    }
 }
