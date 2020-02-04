@@ -6,9 +6,9 @@ import { u1 } from '../times'
 import { Account } from '../account';
 //import { Database } from "../db";
 const router = express.Router().use(cors());
-const UoPDF = require('uopdf');
+//const UoPDF = require('uopdf');
 const account = new Account();
-const uopdates = require('uopdates');
+//const uopdates = require('uopdates');
 
 
 /* GET times from database */
@@ -39,9 +39,9 @@ router.post('/uploadtimes', function(req, res, next) {
 
   form.on('file', (field, file) => {
 
-    UoPDF.getStopsAndTimes(file.path, null, true).subscribe(data => {
-      console.log(data);
-    });
+    //UoPDF.getStopsAndTimes(file.path, null, true).subscribe(data => {
+    //  console.log(data);
+    //});
   });
   form.on('end', () => {
     res.json();
@@ -64,7 +64,7 @@ router.get('/listusers', function(req, res, next) {
 });
 
 router.get('/test', function(req, res, next) {
-  uopdates.getDateRanges(2019).subscribe(data => {res.send(data)});
+  //uopdates.getDateRanges(2019).subscribe(data => {res.send(data)});
 });
 
 router.get('/deleteuser', function(req, res, next) {
