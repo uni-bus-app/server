@@ -1,14 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import { IncomingForm } from 'formidable';
-import { TimesService } from "../timesService";
-import { Account } from '../account';
-//import { Database } from "../db";
+import { TimesService } from "../services/timesService";
+import { Account } from '../services/account';
+import { Notification } from "../services/notification";
+
 const router = express.Router().use(cors());
-//const UoPDF = require('uopdf');
 const account = new Account();
-//const uopdates = require('uopdates');
-import { Notification } from "../notification";
 const notification = new Notification();
 const webpush = require('web-push');
 
@@ -31,6 +29,10 @@ router.post('/yeetus', (req, res) => {
   notification.sendNotification(message);
 })
 
+/***************************************
+ * GET TIMES FOR CLIENT
+ * *********************************** */
+
 /* GET times from database */
 router.get('/gettimes', function(req, res, next) {
 
@@ -39,18 +41,17 @@ router.get('/gettimes', function(req, res, next) {
 
   let thing = times.getLongString(req.param("stopid"), u1);
 
-  //console.log(thing)
 
 
   times.getStopTimes(thing, u1).subscribe(result => {
     res.send(result);
   });
 
-  //console.log(object);
-
-  //res.send(object);
-
 });
+
+/***************************************
+ * TIMES UPLOADING
+ * *********************************** */
 
 /* POST pdf file and read times. */
 router.post('/uploadtimes', function(req, res, next) {
@@ -69,22 +70,22 @@ router.post('/uploadtimes', function(req, res, next) {
   form.parse(req);
 });
 
+
+/***************************************
+ * USER MANAGEMENT
+ * *********************************** */
+
 router.get('/adduser', function(req, res, next) {
 
   account.addUser(req.param("email"), req.param("id")).subscribe(result => {
     console.log(result);
   });
-
 });
 
 router.get('/listusers', function(req, res, next) {
   account.listUsers(req.param("id")).subscribe(result => {
     res.send(result);
   });
-});
-
-router.get('/test', function(req, res, next) {
-  //uopdates.getDateRanges(2019).subscribe(data => {res.send(data)});
 });
 
 router.get('/deleteuser', function(req, res, next) {
