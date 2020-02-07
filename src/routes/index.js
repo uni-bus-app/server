@@ -2,14 +2,34 @@ import express from 'express';
 import cors from 'cors';
 import { IncomingForm } from 'formidable';
 import { TimesService } from "../timesService";
-import { u1 } from '../times'
 import { Account } from '../account';
 //import { Database } from "../db";
 const router = express.Router().use(cors());
 //const UoPDF = require('uopdf');
 const account = new Account();
 //const uopdates = require('uopdates');
+import { Notification } from "../notification";
+const notification = new Notification();
+const webpush = require('web-push');
 
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+
+// Replace with your email
+webpush.setVapidDetails('mailto:info@unib.us', "BKscmwsT8ZKN3sCQyZiUBR3vPyUm6nyKPpTwDcg4z-5aPDPfZru73MvsLifer5uvrjfIljmu9pLRlrW94SYl2UQ", "29WTI_2s53Nk5IrUJsAWIk0N-JH_SR4rpvRqd7-JuFU");
+
+
+router.post('/notifications', (req, res) => {
+  notification.subscribe(req);
+  res.status(201).json({});
+})
+
+router.post('/yeetus', (req, res) => {
+
+  const message = req.body
+  console.log(message)
+  notification.sendNotification(message);
+})
 
 /* GET times from database */
 router.get('/gettimes', function(req, res, next) {
