@@ -4,17 +4,23 @@ import { IncomingForm } from 'formidable';
 import { TimesService } from "../services/timesService";
 import { Account } from '../services/account';
 import { Notification } from "../services/notification";
+import { u1 } from '../services/times';
+//const UoPDF = require('uopdf');
 
 const router = express.Router().use(cors());
 const account = new Account();
 const notification = new Notification();
 const webpush = require('web-push');
+import {stops} from '../services/stops';
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
 // Replace with your email
-webpush.setVapidDetails('mailto:info@unib.us', "BKscmwsT8ZKN3sCQyZiUBR3vPyUm6nyKPpTwDcg4z-5aPDPfZru73MvsLifer5uvrjfIljmu9pLRlrW94SYl2UQ", "29WTI_2s53Nk5IrUJsAWIk0N-JH_SR4rpvRqd7-JuFU");
+webpush.setVapidDetails(
+  'mailto:info@unib.us', 
+  "BKscmwsT8ZKN3sCQyZiUBR3vPyUm6nyKPpTwDcg4z-5aPDPfZru73MvsLifer5uvrjfIljmu9pLRlrW94SYl2UQ", 
+  "29WTI_2s53Nk5IrUJsAWIk0N-JH_SR4rpvRqd7-JuFU");
 
 
 router.post('/notifications', (req, res) => {
@@ -27,6 +33,14 @@ router.post('/yeetus', (req, res) => {
   const message = req.body
   console.log(message)
   notification.sendNotification(message);
+})
+
+/***************************************
+ * GET STOPS FOR CLIENT
+ * *********************************** */
+
+router.get('/getstops', (req, res, next) => {
+  res.send(stops);
 })
 
 /***************************************
