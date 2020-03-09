@@ -40,8 +40,8 @@ function getStops(req, res, next) {
  * *********************************** */
 
 /* GET times from database */
-function getTimes(req, res, next) {
-
+router.get('/times/:stopid', function(req, res, next) {
+  console.log(req.query.stopid);
   //readDB();
   const times = new TimesService();
 
