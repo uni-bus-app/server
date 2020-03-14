@@ -74,7 +74,15 @@ export class TimesService {
     getStopTimes(lngString, times) { //input parameter is string of times for stop
     const date = new Date();
 
+    const day = date.getDay();
+    const isWeekend = (day === 6) || (day === 0);
+
     let timesArray = Array();
+
+    if(isWeekend) {
+        return Observable.of(timesArray);
+    }
+
     let x = 0;
     //loop through each character in the string
     for(let i = 0; i<lngString.length; i++) {

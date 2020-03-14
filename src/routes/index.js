@@ -55,6 +55,7 @@ router.get('/times/:stopid', function(req, res, next) {
     res.send(result);
   });
 }
+);
 
 /***************************************
  * TIMES UPLOADING
@@ -103,7 +104,7 @@ function deleteUser(req, res, next) {
 
 router.get('/stops', getStops);
 
-router.get('/times/:stopid', getTimes);
+// router.get('/times/:stopid', getTimes);
 
 router.post('/uploadtimes', uploadTimes);
 
