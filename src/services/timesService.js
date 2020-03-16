@@ -72,37 +72,34 @@ export class TimesService {
     }
 
     getStopTimes(lngString, times) { //input parameter is string of times for stop
-    const date = new Date();
+        
+        //Check if weekend and return empty array if so
+        const date = new Date();
+        const day = date.getDay();
+        const isWeekend = (day === 6) || (day === 0);
+        let timesArray = Array();
+        if(isWeekend) return Observable.of(timesArray);
 
-    const day = date.getDay();
-    const isWeekend = (day === 6) || (day === 0);
-
-    let timesArray = Array();
-
-    if(isWeekend) {
-        return Observable.of(timesArray);
-    }
-
-    let x = 0;
-    //loop through each character in the string
-    for(let i = 0; i<lngString.length; i++) {
-        if (lngString.charAt(i) == " ") {
-        } else if(lngString.charAt(i) == ".") {
-        //skip the the next 4 characters and set the index +4
-        i = i+3;
-        //timesArray[x] = null;
-        //x++;
-        } else if(!(isNaN(lngString.charAt(i)))) {
-            //checks if number and output the next 4 characters and set the index +4
-            let timeReturn = (lngString.substring(i, i+4));
+        let x = 0;
+        //loop through each character in the string
+        for(let i = 0; i<lngString.length; i++) {
+            if (lngString.charAt(i) == " ") {
+            } else if(lngString.charAt(i) == ".") {
+            //skip the the next 4 characters and set the index +4
             i = i+3;
-            
-            timesArray[x] = this.createStopTime(timeReturn, times);
-            x++
+            //timesArray[x] = null;
+            //x++;
+            } else if(!(isNaN(lngString.charAt(i)))) {
+                //checks if number and output the next 4 characters and set the index +4
+                let timeReturn = (lngString.substring(i, i+4));
+                i = i+3;
+                
+                timesArray[x] = this.createStopTime(timeReturn, times);
+                x++
 
-        } else if(lngString.charAt(i)=="!"){
-        break;
-        }
+            } else if(lngString.charAt(i)=="!"){
+            break;
+            }
     }
     //console.log(timesArray);
     while(timesArray[0]===null||(timesArray[0]?timesArray[0].timeValue < (date.getTime()+60000):false))  {

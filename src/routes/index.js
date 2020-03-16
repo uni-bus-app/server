@@ -3,29 +3,11 @@ import cors from 'cors';
 import { IncomingForm } from 'formidable';
 import { TimesService } from "../services/timesService";
 import { Account } from '../services/account';
-import { Notification } from "../services/notification";
 import { u1 } from '../services/times';
 import { stops } from '../services/stops';
 
 const router = express.Router().use(cors());
 const account = new Account();
-const notification = new Notification();
-
-/*****************************************
- * NOTIFICATIONS
- * ************************************* */
-
-router.post('/notifications', (req, res) => {
-  notification.subscribe(req);
-  res.status(201).json({});
-});
-
-router.post('/yeetus', (req, res) => {
-
-  const message = req.body
-  console.log(message)
-  notification.sendNotification(message);
-});
 
 /***************************************
  * GET STOPS FOR CLIENT
@@ -39,23 +21,13 @@ function getStops(req, res, next) {
  * GET TIMES FOR CLIENT
  * *********************************** */
 
-/* GET times from database */
-router.get('/times/:stopid', function(req, res, next) {
-  console.log(req.query.stopid);
-  //readDB();
+function getTimes(req, res, next) {
   const times = new TimesService();
-
-  let thing = times.getLongString(req.params.stopid, u1);
-
-  console.log(req.params.stopid)
-
-
-
-  times.getStopTimes(thing, u1).subscribe(result => {
+  let timesData = times.getLongString(req.params.stopid, u1);
+  times.getStopTimes(timesData, u1).subscribe(result => {
     res.send(result);
   });
 }
-);
 
 /***************************************
  * TIMES UPLOADING
@@ -103,11 +75,9 @@ function deleteUser(req, res, next) {
  * ************************************** */
 
 router.get('/stops', getStops);
-
-// router.get('/times/:stopid', getTimes);
+router.get('/times/:stopid', getTimes);
 
 router.post('/uploadtimes', uploadTimes);
-
 router.get('/users/add/:authid/:email', addUser);
 router.get('/users/list/:authid', listUsers);
 router.get('/users/delete/:authid/:uid', deleteUser);
