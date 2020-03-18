@@ -3,11 +3,13 @@ import cors from 'cors';
 import { IncomingForm } from 'formidable';
 import { TimesService } from "../services/timesService";
 import { Account } from '../services/account';
+import { Notification } from '../services/notification';
 import { u1 } from '../services/times';
 import { stops } from '../services/stops';
 
 const router = express.Router().use(cors());
 const account = new Account();
+const notification = new Notification();
 
 /***************************************
  * GET STOPS FOR CLIENT
@@ -27,6 +29,10 @@ function getTimes(req, res, next) {
   times.getStopTimes(timesData, u1).subscribe(result => {
     res.send(result);
   });
+}
+
+function getNotifications(req, res, next) {
+  notification.getCurrent().subscribe(data => res.send(data))
 }
 
 /***************************************
@@ -76,6 +82,8 @@ function deleteUser(req, res, next) {
 
 router.get('/stops', getStops);
 router.get('/times/:stopid', getTimes);
+
+router.get('/notifications', getNotifications);
 
 router.post('/uploadtimes', uploadTimes);
 router.get('/users/add/:authid/:email', addUser);
