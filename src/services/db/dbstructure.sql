@@ -1,0 +1,77 @@
+DROP DATABASE uopbackdb;
+CREATE DATABASE uopbackdb;
+
+use uopbackdb;
+
+CREATE TABLE IF NOT EXISTS timetable (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS stop (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  place VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS timetable_stop (
+  timetable_id INT NOT NULL,
+  stop_id INT NOT NULL,
+  PRIMARY KEY (timetable_id, stop_id),
+  FOREIGN KEY (timetable_id) REFERENCES timetable(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (stop_id) REFERENCES stop(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS arrival (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  timetable_id INT NOT NULL,
+  stop_id INT NOT NULL,
+  scheduled_time CHAR(4) NOT NULL,
+  rollover BOOLEAN NOT NULL,
+  exception VARCHAR(255) NOT NULL,
+  FOREIGN KEY (timetable_id) REFERENCES timetable(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (stop_id) REFERENCES stop(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS daterange (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  start_date DATETIME NOT NULL,
+  end_date DATETIME NOT NULL,
+  whitelist BOOLEAN NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS arrival_daterange (
+  arrival_id INT NOT NULL,
+  daterange_id INT NOT NULL,
+  PRIMARY KEY (arrival_id, daterange_id),
+  FOREIGN KEY (arrival_id) REFERENCES arrival(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (daterange_id) REFERENCES daterange(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS route (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS arrival_route (
+  route_id INT NOT NULL,
+  arrival_id INT NOT NULL,
+  PRIMARY KEY (route_id, arrival_id),
+  FOREIGN KEY (route_id) REFERENCES route(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (arrival_id) REFERENCES arrival(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);

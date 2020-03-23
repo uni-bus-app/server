@@ -6,17 +6,29 @@ import { Account } from '../services/account';
 import { Notification } from '../services/notification';
 import { u1 } from '../services/times';
 import { stops } from '../services/stops';
+import { DatabaseService } from '../services/db';
+const my_db = require('../services/db')
+//#endregion
 
 const router = express.Router().use(cors());
 const account = new Account();
 const notification = new Notification();
+
+let db = new my_db({
+	database: 'unibus',
+  host: '35.230.149.136',
+	user: 'root',
+  password: ''
+});
+
 
 /***************************************
  * GET STOPS FOR CLIENT
  * *********************************** */
 
 function getStops(req, res, next) {
-  res.send(stops);
+  db.get_stops(req.query, (data) => res.send(data))
+  //res.send(stops);
 }
 
 /***************************************
@@ -24,11 +36,14 @@ function getStops(req, res, next) {
  * *********************************** */
 
 function getTimes(req, res, next) {
-  const times = new TimesService();
-  let timesData = times.getLongString(req.params.stopid, u1);
-  times.getStopTimes(timesData, u1).subscribe(result => {
-    res.send(result);
-  });
+  // const times = new TimesService();
+  // let timesData = times.getLongString(req.params.stopid, u1);
+  // times.getStopTimes(timesData, u1).subscribe(result => {
+  //   res.send(result);
+  // });
+  db.get_arrivals(req.query, data => {
+    res.send(data)
+  })
 }
 
 function getNotifications(req, res, next) {
@@ -82,6 +97,8 @@ function deleteUser(req, res, next) {
 
 router.get('/stops', getStops);
 router.get('/times/:stopid', getTimes);
+
+router.get('/arrivals/', getTimes);
 
 router.get('/notifications', getNotifications);
 
