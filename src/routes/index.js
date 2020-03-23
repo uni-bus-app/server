@@ -1,13 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import { IncomingForm } from 'formidable';
-import { TimesService } from "../services/timesService";
 import { Account } from '../services/account';
 import { Notification } from '../services/notification';
-import { u1 } from '../services/times';
-import { stops } from '../services/stops';
-import { DatabaseService } from '../services/db';
-const my_db = require('../services/db')
+const my_db = require('../services/db');
 //#endregion
 
 const router = express.Router().use(cors());
@@ -36,11 +32,6 @@ function getStops(req, res, next) {
  * *********************************** */
 
 function getTimes(req, res, next) {
-  // const times = new TimesService();
-  // let timesData = times.getLongString(req.params.stopid, u1);
-  // times.getStopTimes(timesData, u1).subscribe(result => {
-  //   res.send(result);
-  // });
   db.get_arrivals(req.query, data => {
     res.send(data)
   })

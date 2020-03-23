@@ -3,7 +3,6 @@ const uopdf = require('../../../../UoPDF');
 const uopdates = require('../../../../UoPDates');
 const moment = require('moment');
 const SQL_STATEMENTS = require('./sql_statements.js');
-const placesData = require('../stops.js');
 
 module.exports = class UoPBackDB {
 	constructor(options) {
@@ -50,7 +49,7 @@ module.exports = class UoPBackDB {
 		}
 	}
 	get_timetables(query, callback) {
-		 if (query) {
+		if (query) {
 		  this.query(SQL_STATEMENTS[`get_timetables`], (err, results, fields) => {
 		    let data = results;
 		    let JSONdata = JSON.stringify(data);
@@ -211,7 +210,7 @@ test_get_statements() {
 test_insert_real_stops_and_timetables() {
   return new Promise((resolve, reject) => {
     const timetables = ['U1', 'U2'];
-    let places = placesData.map((data) => `${data.lat.toString()},${data.lng.toString()}`);
+    // let places = placesData.map((data) => `${data.lat.toString()},${data.lng.toString()}`);
     timetables.forEach(
       title => {
         this.query(SQL_STATEMENTS['timetable_add'], [title]) 
