@@ -41,6 +41,10 @@ function getNotifications(req, res, next) {
   notification.getCurrent().subscribe(data => res.send(data))
 }
 
+function getServiceInfo(req, res, next) {
+  notification.getCurrentServiceInfo().subscribe(data => res.send(data));
+}
+
 /***************************************
  * TIMES UPLOADING
  * *********************************** */
@@ -92,6 +96,7 @@ router.get('/times/:stopid', getTimes);
 router.get('/arrivals/', getTimes);
 
 router.get('/notifications', getNotifications);
+router.get('/serviceinfo', getServiceInfo);
 
 router.post('/uploadtimes', uploadTimes);
 router.get('/users/add/:authid/:email', addUser);
