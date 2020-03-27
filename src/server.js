@@ -1,21 +1,29 @@
-import express from 'express';
-import cors from 'cors';
-import { IncomingForm } from 'formidable';
-import { Account } from '../services/account';
-import { Notification } from '../services/notification';
-const my_db = require('../services/db');
+const express = require('express');
+const cors = require('cors');
+const app = express().use(cors());
+
+const IncomingForm = require('formidable').IncomingForm;
+const account = require('./services/account')
+const notification = require('./services/notification');
+const db = require('./services/db');
 //#endregion
 
-const router = express.Router().use(cors());
-const account = new Account();
-const notification = new Notification();
+//const router = express.Router().use(cors());
 
-let db = new my_db({
+
+db.init({
 	database: 'unibus',
-  host: '35.230.149.136',
-	user: 'root',
-  password: ''
-});
+  socketPath: '/cloudsql/bustimetable-261720:europe-west2:uop-bus',
+	 user: 'root',
+  password: 'busTimeTable'
+})
+
+// db.init({
+// 	database: 'unibus',
+//   host: '35.230.149.136',
+// 	user: 'root',
+//   password: 'busTimeTable'
+// })
 
 
 /***************************************
@@ -23,7 +31,9 @@ let db = new my_db({
  * *********************************** */
 
 function getStops(req, res, next) {
-  db.get_stops(req.query, (data) => res.send(data))
+  db.get_stops(req.query).subscribe(data => {
+    res.send(data)
+  });
   //res.send(stops);
 }
 
@@ -32,9 +42,9 @@ function getStops(req, res, next) {
  * *********************************** */
 
 function getTimes(req, res, next) {
-  db.get_arrivals(req.query, data => {
+  db.get_arrivals(req.query).subscribe(data => {
     res.send(data)
-  })
+  });
 }
 
 function getNotifications(req, res, next) {
@@ -55,10 +65,7 @@ function uploadTimes(req, res, next) {
   const form = IncomingForm();
 
   form.on('file', (field, file) => {
-
-    //UoPDF.getStopsAndTimes(file.path, null, true).subscribe(data => {
-    //  console.log(data);
-    //});
+    console.log(file.path)
   });
   form.on('end', () => {
     res.json();
@@ -90,17 +97,21 @@ function deleteUser(req, res, next) {
  * ROUTES
  * ************************************** */
 
-router.get('/stops', getStops);
-router.get('/times/:stopid', getTimes);
+app.get('/stops', getStops);
+app.get('/times/:stopid', getTimes);
 
-router.get('/arrivals/', getTimes);
+app.get('/arrivals/', getTimes);
 
-router.get('/notifications', getNotifications);
-router.get('/serviceinfo', getServiceInfo);
+app.get('/notifications', getNotifications);
+app.get('/serviceinfo', getServiceInfo);
 
-router.post('/uploadtimes', uploadTimes);
-router.get('/users/add/:authid/:email', addUser);
-router.get('/users/list/:authid', listUsers);
-router.get('/users/delete/:authid/:uid', deleteUser);
+app.post('/uploadtimes', express.json(), uploadTimes);
+app.get('/users/add/:authid/:email', addUser);
+app.get('/users/list/:authid', listUsers);
+app.get('/users/delete/:authid/:uid', deleteUser);
 
-export default router;
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}...`);
+});
