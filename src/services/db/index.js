@@ -28,7 +28,7 @@ function test_query(table, sql, params=[]) {
   dbQuery(sql, params);
   dbQuery(SQL_STATEMENTS[`get_${table}s`]);
 }
-function get_arrivals(query) {
+function getArrivals(query) {
   return Observable.create(observer => {
     if (query) {
       if (query.timetable && query.stop) {
@@ -59,7 +59,7 @@ function get_arrivals(query) {
     }
   });
 }
-function get_timetables(query) {
+function getTimetables(query) {
   return Observable.create(observer => {
     if (query) {
       dbQuery(SQL_STATEMENTS[`get_timetables`]).subscribe(results => {
@@ -71,7 +71,7 @@ function get_timetables(query) {
     }
   });
 }
-function get_stops(query) {
+function getStops(query) {
   return Observable.create(observer => {
     if (query.timetable) {
       dbQuery(SQL_STATEMENTS[`get_timetable_stops`]).subscribe(results => {
@@ -90,7 +90,7 @@ function get_stops(query) {
     }
   });
 }
-function get_dateranges(query) {
+function getDataranges(query) {
   return Observable.create(observer => {
     if (query) {
       dbQuery(SQL_STATEMENTS[`get_dateranges`]).subscribe(results => {
@@ -102,7 +102,7 @@ function get_dateranges(query) {
     }
   });
 }
-function get_fields(query) {
+function getFields(query) {
   return Observable.create(observer => {
     if (query.table) {
       dbQuery(SQL_STATEMENTS[`get_fields`]).subscribe(results => {
@@ -115,7 +115,7 @@ function get_fields(query) {
     }
   });
 }
-function get_count(query) {
+function getCount(query) {
   return Observable.create(observer => {
     if (query.table) {
       dbQuery(SQL_STATEMENTS[`get_${req.query.table}_count`]).subscribe(results => {
@@ -326,10 +326,10 @@ module.exports = {
   init,
   dbQuery,
   test_query,
-  get_arrivals,
-  get_timetables,
-  get_stops,
-  get_dateranges,
-  get_fields,
-  get_count
+  get_arrivals: getArrivals,
+  get_timetables: getTimetables,
+  get_stops: getStops,
+  get_dateranges: getDataranges,
+  get_fields: getFields,
+  get_count: getCount
 }

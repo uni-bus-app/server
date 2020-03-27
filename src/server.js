@@ -8,8 +8,12 @@ const notification = require('./services/notification');
 const db = require('./services/db');
 //#endregion
 
-//const router = express.Router().use(cors());
+// const serviceAccount = require('D:/Downloads/bustimetable-261720-firebase-adminsdk-z2wl9-9bd0b645d7.json')
 
+admin.initializeApp({
+  // credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.applicationDefault()
+})
 
 db.init({
 	database: 'unibus',
