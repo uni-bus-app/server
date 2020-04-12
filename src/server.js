@@ -13,7 +13,7 @@ const db = require('./services/db');
 admin.initializeApp({
   // credential: admin.credential.cert(serviceAccount)
   credential: admin.credential.applicationDefault()
-})
+});
 
 const account = require('./services/account')
 const notification = require('./services/notification');
@@ -23,20 +23,20 @@ db.init({
   socketPath: '/cloudsql/bustimetable-261720:europe-west2:uop-bus',
 	 user: 'root',
   password: 'busTimeTable'
-})
+});
 
 // db.init({
 // 	database: 'unibus',
 //   host: '35.230.149.136',
 // 	user: 'root',
 //   password: 'busTimeTable'
-// })
+// });
 
 // app.post('/testing', express.json(), (req, res) => {
 //   console.log(req.body);
 //   const route = {"path": req.body};
 //   admin.firestore().collection('routes').add(route).then(data => console.log(data))
-// })
+// });
 
 app.get('/u1routepath', (req, res) => {
   let result;
@@ -58,7 +58,6 @@ function getStops(req, res, next) {
   db.get_stops(req.query).subscribe(data => {
     res.send(data)
   });
-  //res.send(stops);
 }
 
 /***************************************

@@ -83,6 +83,8 @@ function getStops(query) {
     } else {
       dbQuery(SQL_STATEMENTS[`get_stops`]).subscribe(results => {
         let data = results;
+        // Remove duplicate library stop
+        data.pop();
         let JSONdata = JSON.stringify(data);
         observer.next(JSONdata);
         observer.complete();
