@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const app = express().use(cors());
+const admin = require('firebase-admin');
 
 const IncomingForm = require('formidable').IncomingForm;
-const account = require('./services/account')
-const notification = require('./services/notification');
+
 const db = require('./services/db');
 //#endregion
 
@@ -14,6 +14,9 @@ admin.initializeApp({
   // credential: admin.credential.cert(serviceAccount)
   credential: admin.credential.applicationDefault()
 })
+
+const account = require('./services/account')
+const notification = require('./services/notification');
 
 db.init({
 	database: 'unibus',
@@ -29,6 +32,23 @@ db.init({
 //   password: 'busTimeTable'
 // })
 
+// app.post('/testing', express.json(), (req, res) => {
+//   console.log(req.body);
+//   const route = {"path": req.body};
+//   admin.firestore().collection('routes').add(route).then(data => console.log(data))
+// })
+
+app.get('/u1routepath', (req, res) => {
+  let result;
+  admin.firestore().collection('routes').get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        result = doc.data().path;
+        console.log(result)
+        res.send(result)
+      });
+    });
+});
 
 /***************************************
  * GET STOPS FOR CLIENT
