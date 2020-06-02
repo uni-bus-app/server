@@ -5,32 +5,24 @@ const admin = require('firebase-admin');
 
 const IncomingForm = require('formidable').IncomingForm;
 
-const db = require('./services/db');
 //#endregion
 
-// const serviceAccount = require('D:/Downloads/bustimetable-261720-firebase-adminsdk-z2wl9-9bd0b645d7.json')
+const serviceAccount = require('../unibus-app-firebase-adminsdk-o15ed-2d4a0c28f8.json')
 
 admin.initializeApp({
-  // credential: admin.credential.cert(serviceAccount)
-  credential: admin.credential.applicationDefault()
+  credential: admin.credential.cert(serviceAccount)
+  // credential: admin.credential.applicationDefault()
 });
 
+const firestore = require('./firestore');
 const account = require('./services/account')
 const notification = require('./services/notification');
 
-db.init({
-	database: 'unibus',
-  socketPath: '/cloudsql/bustimetable-261720:europe-west2:uop-bus',
-	 user: 'root',
-  password: 'busTimeTable'
-});
 
-// db.init({
-// 	database: 'unibus',
-//   host: '35.230.149.136',
-// 	user: 'root',
-//   password: 'busTimeTable'
-// });
+
+firestore.insertTimes();
+
+
 
 // app.post('/testing', express.json(), (req, res) => {
 //   console.log(req.body);
