@@ -2,11 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const app = express().use(cors());
 const admin = require('firebase-admin');
-
-const IncomingForm = require('formidable').IncomingForm;
-
-//#endregion
-
 const serviceAccount = require('../unibus-app-firebase-adminsdk-o15ed-2d4a0c28f8.json')
 
 admin.initializeApp({
@@ -18,17 +13,32 @@ const firestore = require('./firestore');
 const account = require('./services/account')
 const notification = require('./services/notification');
 
+async function getStops(req, res, next) {
+  try {
+    const stops = await firestore.getStops();
+    res.send(stops);
+  } catch (error) {
+    next(error);
+  }
+}
 
+async function getTimes(req, res, next) {
+  try {
+    const times = await firestore.getTimes(req.params.stopID);
+    res.send(times);
+  } catch (error) {
+    next(error);
+  }
+}
 
-firestore.insertTimes();
-
-
-
-// app.post('/testing', express.json(), (req, res) => {
-//   console.log(req.body);
-//   const route = {"path": req.body};
-//   admin.firestore().collection('routes').add(route).then(data => console.log(data))
-// });
+async function getRoutes(req, res, next) {
+  try {
+    const routes = await firestore.getRoutes();
+    res.send(routes);
+  } catch (error) {
+    next(error);
+  }
+}
 
 app.get('/u1routepath', (req, res) => {
   let result;
@@ -41,26 +51,6 @@ app.get('/u1routepath', (req, res) => {
       });
     });
 });
-
-/***************************************
- * GET STOPS FOR CLIENT
- * *********************************** */
-
-function getStops(req, res, next) {
-  db.get_stops(req.query).subscribe(data => {
-    res.send(data)
-  });
-}
-
-/***************************************
- * GET TIMES FOR CLIENT
- * *********************************** */
-
-function getTimes(req, res, next) {
-  db.get_arrivals(req.query).subscribe(data => {
-    res.send(data)
-  });
-}
 
 function getNotifications(req, res, next) {
   notification.getCurrent().subscribe(data => res.send(data))
@@ -113,9 +103,8 @@ function deleteUser(req, res, next) {
  * ************************************** */
 
 app.get('/stops', getStops);
-app.get('/times/:stopid', getTimes);
-
-app.get('/arrivals/', getTimes);
+app.get('/stops/:stopID/times', getTimes);
+app.get('/routes', getRoutes);
 
 app.get('/notifications', getNotifications);
 app.get('/serviceinfo', getServiceInfo);
