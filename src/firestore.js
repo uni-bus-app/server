@@ -70,7 +70,7 @@ async function insertRoutes() {
 }
 
 async function getStops() {
-  const snapshot = await db.collection('stops').get();
+  const snapshot = await db.collection('stops').orderBy('routeOrder').get();
   const result = [];
   snapshot.forEach(doc => {
     const stopData = doc.data();
