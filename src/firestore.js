@@ -73,7 +73,9 @@ async function getStops() {
   const snapshot = await db.collection('stops').get();
   const result = [];
   snapshot.forEach(doc => {
-    result.push(doc.data())
+    const stopData = doc.data();
+    stopData.id = doc.id;
+    result.push(stopData);
   })
   return result;
 }
