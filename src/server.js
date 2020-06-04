@@ -40,13 +40,36 @@ async function getRoutes(req, res, next) {
   }
 }
 
+async function syncLocalDB(req, res, next) { 
+  try {
+    // Check client checksums against server ones
+    const versions = await firestore.getChecksums()
+    let dataChanged = false;
+    for (const version in versions) {
+      if(versions[version] !== req.body[version]) {
+        dataChanged = true;
+      }
+    }
+    // If any checksums are different, resync the local db
+    if (dataChanged) {
+      const stops = await firestore.getStops()
+      const times = await firestore.getAllTimes();
+      const routes = await firestore.getRoutes();
+      res.send({stops, times, routes});
+    } else {
+      res.send(null);
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
 app.get('/u1routepath', (req, res) => {
   let result;
   admin.firestore().collection('routes').get()
     .then(snapshot => {
       snapshot.forEach(doc => {
         result = doc.data().path;
-        console.log(result)
         res.send(result)
       });
     });
@@ -105,6 +128,7 @@ function deleteUser(req, res, next) {
 app.get('/stops', getStops);
 app.get('/stops/:stopID/times', getTimes);
 app.get('/routes', getRoutes);
+app.post('/sync', express.json(), syncLocalDB);
 
 app.get('/notifications', getNotifications);
 app.get('/serviceinfo', getServiceInfo);

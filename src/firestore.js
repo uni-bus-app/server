@@ -2,6 +2,7 @@ const admin = require('firebase-admin');
 const db = admin.firestore();
 const uopdf = require('uopdf');
 const uopdates = require('uopdates');
+const hash = require('object-hash');
 
 async function parseStops() {
   const result = await uopdf.getStopsAndTimes('u1.pdf', null, true)
@@ -32,32 +33,51 @@ async function parseRoutes() {
       });
     });
   }
-  console.log(routes);
   return routes;
 }
 
 async function insertStops() {
   const stopNames = await parseStops();
   stopNames.pop();
-  const stops = [];
   const batch = db.batch();
   stopNames.forEach((element, i) => {
     batch.set(db.collection('stops').doc(), {name: element, routeOrder: i});
   });
   await batch.commit();
+  const stops = await getStops();
+  const stopHash = hash(stops);
+  const snapshot = await db.collection('version').get();
+  snapshot.forEach(element => {
+    element.ref.update({stopsVersion: stopHash});
+  });
 }
 
 async function insertTimes() {
   const stopTimes = await parseTimes();
-  console.log(stopTimes)
+
+  const stopTimesInfo = [];
+  stopTimes.forEach((element, i) => {
+    stopTimesInfo[i] = [];
+    element.forEach((time, n) => {
+      stopTimesInfo[i].push({scheduled: time, routeNumber: n});
+    })
+    
+  });
   const batch = db.batch();
   const snapshot = await db.collection('stops').orderBy('routeOrder').get();
   let i = 0;
   snapshot.forEach(doc => {
-    batch.set(db.collection('times').doc(), {stopID: doc.id, times: stopTimes[i]})
+    batch.set(db.collection('times').doc(), {stopID: doc.id, times: stopTimesInfo[i]})
     i++;
   })
   await batch.commit();
+
+  const times = await getAllTimes();
+  const timesHash = hash(times);
+  const versionSnapshot = await db.collection('version').get();
+  versionSnapshot.forEach(element => {
+    element.ref.update({timesVersion: timesHash});
+  });
 }
 
 async function insertRoutes() {
@@ -67,6 +87,13 @@ async function insertRoutes() {
     batch.set(db.collection('routes').doc(), {routeNumber: i, stops: element});
   })
   await batch.commit();
+
+  const dbRoutes = await getRoutes();
+  const routesHash = hash(dbRoutes);
+  const versionSnapshot = await db.collection('version').get();
+  versionSnapshot.forEach(element => {
+    element.ref.update({routesVersion: routesHash});
+  });
 }
 
 async function getStops() {
@@ -93,8 +120,30 @@ async function getRoutes() {
   const snapshot = await db.collection('routes').orderBy('routeNumber').get();
   const result = [];
   snapshot.forEach(doc => {
-    result.push(doc.data())
-  })
+    const routeData = doc.data();
+    routeData.id = doc.id;
+    result.push(routeData);
+  });
+  return result;
+}
+
+async function getAllTimes() {
+  const snapshot = await db.collection('times').get();
+  let result = [];
+  snapshot.forEach(doc => {
+    const timesData = doc.data();
+    timesData.id = doc.id;
+    result.push(timesData);
+  });
+  return result;
+}
+
+async function getChecksums() {
+  const snapshot = await db.collection('version').get();
+  let result;
+  snapshot.forEach(doc => {
+    result = doc.data();
+  });
   return result;
 }
 
@@ -105,4 +154,6 @@ module.exports = {
   getStops,
   getTimes,
   getRoutes,
+  getAllTimes,
+  getChecksums,
 }

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node src/server",
-    "watch": "nodemon"
+    "watch": "nodemon",
+    "deploy": "gcloud app deploy --no-promote"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -14,6 +15,7 @@
     "formidable": "^1.2.2",
     "moment": "^2.24.0",
     "mysql": "^2.18.1",
+    "object-hash": "^2.0.3",
     "rxjs": "^6.5.4",
     "rxjs-compat": "^6.5.4",
     "uopdates": "file:uopdates-1.0.0.tgz",
