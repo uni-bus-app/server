@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express().use(cors());
 const admin = require('firebase-admin');
-const serviceAccount = require('../unibus-app-firebase-adminsdk-o15ed-2d4a0c28f8.json')
+const serviceAccount = require('../unibus-app-firebase-adminsdk-o15ed-2d4a0c28f8.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -10,7 +10,7 @@ admin.initializeApp({
 });
 
 const firestore = require('./firestore');
-const account = require('./services/account')
+const account = require('./services/account');
 const notification = require('./services/notification');
 
 async function getStops(req, res, next) {
@@ -75,11 +75,11 @@ app.get('/u1routepath', (req, res) => {
     });
 });
 
-function getNotifications(req, res, next) {
+function getNotifications(req, res) {
   notification.getCurrent().subscribe(data => res.send(data))
 }
 
-function getServiceInfo(req, res, next) {
+function getServiceInfo(req, res) {
   notification.getCurrentServiceInfo().subscribe(data => res.send(data));
 }
 
@@ -88,7 +88,7 @@ function getServiceInfo(req, res, next) {
  * *********************************** */
 
 /* POST pdf file and read times. */
-function uploadTimes(req, res, next) {
+function uploadTimes(req, res) {
 
   const form = IncomingForm();
 
@@ -105,19 +105,19 @@ function uploadTimes(req, res, next) {
  * USER MANAGEMENT
  * *********************************** */
 
-function addUser(req, res, next) {
+function addUser(req, res) {
   account.addUser(req.params.email, req.params.authid).subscribe(result => {
     console.log(result);
   });
 }
 
-function listUsers(req, res, next) {
+function listUsers(req, res) {
   account.listUsers(req.params.authid).subscribe(result => {
     res.send(result);
   });
 }
 
-function deleteUser(req, res, next) {
+function deleteUser(req, res) {
   account.deleteUser(req.params.uid, req.params.authid).subscribe(data => {res.send(data)});
 }
 
