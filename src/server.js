@@ -13,6 +13,8 @@ const firestore = require('./firestore');
 const account = require('./services/account');
 const notification = require('./services/notification');
 
+firestore.updateChecksums();
+
 async function getStops(req, res, next) {
   try {
     const stops = await firestore.getStops();
@@ -43,6 +45,7 @@ async function getRoutes(req, res, next) {
 async function syncLocalDB(req, res, next) { 
   try {
     // Check client checksums against server ones
+    console.log(req.body)
     const versions = await firestore.getChecksums()
     let dataChanged = false;
     for (const version in versions) {

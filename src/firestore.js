@@ -44,12 +44,6 @@ async function insertStops() {
     batch.set(db.collection('stops').doc(), {name: element, routeOrder: i});
   });
   await batch.commit();
-  const stops = await getStops();
-  const stopHash = hash(stops);
-  const snapshot = await db.collection('version').get();
-  snapshot.forEach(element => {
-    element.ref.update({stopsVersion: stopHash});
-  });
 }
 
 async function insertTimes() {
@@ -71,13 +65,6 @@ async function insertTimes() {
     i++;
   })
   await batch.commit();
-
-  const times = await getAllTimes();
-  const timesHash = hash(times);
-  const versionSnapshot = await db.collection('version').get();
-  versionSnapshot.forEach(element => {
-    element.ref.update({timesVersion: timesHash});
-  });
 }
 
 async function insertRoutes() {
@@ -87,13 +74,6 @@ async function insertRoutes() {
     batch.set(db.collection('routes').doc(), {routeNumber: i, stops: element});
   })
   await batch.commit();
-
-  const dbRoutes = await getRoutes();
-  const routesHash = hash(dbRoutes);
-  const versionSnapshot = await db.collection('version').get();
-  versionSnapshot.forEach(element => {
-    element.ref.update({routesVersion: routesHash});
-  });
 }
 
 async function getStops() {
@@ -138,6 +118,38 @@ async function getAllTimes() {
   return result;
 }
 
+async function updateVersion(versionInfo) {
+  db.collection('version').get().then(snapshot => {
+    snapshot.forEach(element => {
+      element.ref.update(versionInfo);
+    });
+  });
+}
+
+async function updateChecksums() {
+  db.collection('stops').orderBy('routeOrder').onSnapshot(() => {
+    getStops().then(stops => {
+      const stopsHash = hash(stops);
+      console.log(stopsHash)
+      updateVersion({stopsVersion: stopsHash});
+    });
+  });
+  db.collection('times').onSnapshot(() => {
+    getAllTimes().then(times => {
+      const timesHash = hash(times);
+      console.log(timesHash)
+      updateVersion({timesVersion: timesHash});
+    });
+  });
+  db.collection('routes').orderBy('routeNumber').onSnapshot(() => {
+    getRoutes().then(routes => {
+      const routesHash = hash(routes);
+      console.log(routesHash)
+      updateVersion({routesVersion: routesHash});
+    });
+  });
+}
+
 async function getChecksums() {
   const snapshot = await db.collection('version').get();
   let result;
@@ -156,4 +168,5 @@ module.exports = {
   getRoutes,
   getAllTimes,
   getChecksums,
+  updateChecksums
 }
