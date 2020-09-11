@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "unibus-app",
+  "private_key_id": "d8f57cb1c9a5cb9b9da53097d250dc0693d0b262",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDNasNYwqyh38m1\nO4pn0m6cx0hFYSi007YfSoQMIp5kOBi8HoF8j/rFWnoRpttIzpE8RALbOfzbrx2X\ngSDtSmGnTZMLx2DNtH/iwjhosb2SESdnY+q0sYWeOo8oKx49xOORX+QviPk9Nd1U\nSScLVdI7uPQ95xZAB1ym6OXVp4zkxKD12jrCq8s+q88OXCYUi5LP0fz3Dwq4UQ/P\n4zGWQKyG3yTn9t4p9uYzD2UxqTg8jf5OcexisnonIBZmhXjXKTZ873Q4o1rMYkFG\nwIY938timvJzUN4d/WHJL7uwW+NFjxQAP01ZsXzmAric3g+f5pRFeMk4uME4hml8\n+YfjC7qLAgMBAAECgf9OMoTlFqssxadJhTJw3x8OBBTE4De2ExC18AUOyB74NmKo\ngDo/MO1dHFoWARHWSG+NDT+sBmckf+Jm4aoETe9qezTE6goec1I7upynbNOmaich\nkdCBhIcqnavhnrb7tWxgdqw4g48YGzqx8pt2EkzenecWwOG3fi07i21nXI+6hhMa\nyzk176n4ExMmuqzz6Apf7wdxffL3k/nRYrwku7B7vtZ7BH7yjcxMdyuo2YTCuYQY\n3NnnirxwQdpzg8CkfH5zyhrv31nAeqeXa2MFGpur9PyW0svI94HWMlUJzRpk+HKF\nYcXX0Ng1czyWtvhVvUHiEKi0bAilquGmEtquVQECgYEA/+jc5Ua5l1ne/2tZRSeL\ng+HFSpY6h/4G2cG0L/VOwFCSI1biMO6VQr3iXji7zPvwgb06tteci/wBRH6Uqqd6\nYoHhpba8oO30Xa9DW+JUSvaup3Mb1jB5p8ICVPbA+B263l+12cSQz2BBi0yooooE\nCjc0gSQ8aQb2OtvBZcWfIykCgYEAzX1VyQ3qLIA7vZxcpZUGC82jwWNIQYWP2oIC\nkavk/RN8o9a240tAKGHbUSa5m49CfcB1rF0oTrKKeKRY3gMdg6oSEs7a/EnclRPz\nbnUAidjEWsKdz2dzb8xBBG+z3FA7jO7WDX/CsUdeVc7nTTGiLW+RqeDt/Iyd1qKI\nAZDBepMCgYAypjkKG+xhm0T6kpmRiVkgmg+9Smx9O/bJJIBwOYIDqC60Vd7gxme+\nVOy3r0zkLj0UwIodZCE0x4TMtKzh9dHQK1qovLkqtM33uNeBGROL3rUEqVCqHOAH\nJuvlOw1ITkIM/y5z0mbC1I9EbcC2otBX4UNACBb4xor3bUUiynFLuQKBgQCB8lSh\nhC8mXSFqUssz2v2r0StRTFuRM8k4wSamwDFa6UvUwB9/tUKpRtjOhNKzUPEXXPIN\nQgwPWFDA4g1guE+dx5sOUcmh6YOYsrkqjMr+YRoq2w+47Q7PEDe9enYfSI2gHhk3\nCCgyu5MoaGNVKaIJYZiX+SoGn1XhOX8Qnl38CQKBgQDvgBBmqJQP70YnC4jX4k95\nvrzv2oyJmC9nnsHHtERdWdPH3hg6OJFvjKQVlumCsNFUsb8yJ6X8i9wNNGQGAMv0\njrvG3v0nA2PCekZ/YvTAgw5Ukv3xbRjPl9Mf7hkhXKrVwxyvXYuNWWxLdk3woorO\nAHAhoE2vHbbF4816VRFJ/w==\n-----END PRIVATE KEY-----\n",
+  "client_email": "analytics@unibus-app.iam.gserviceaccount.com",
+  "client_id": "116700904287053127641",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/analytics%40unibus-app.iam.gserviceaccount.com"
+}
