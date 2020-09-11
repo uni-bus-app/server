@@ -159,6 +159,17 @@ async function getChecksums() {
   return result;
 }
 
+async function addNotificationID(sub) {
+  await db.collection('subscriptions').add(sub);
+}
+
+async function getSubscriptions() {
+  const sub = await db.collection('subscriptions').get();
+  let elem
+  sub.forEach(el => {elem = el.data();})
+  return elem;
+}
+
 module.exports = {
   insertStops,
   insertTimes,
@@ -168,5 +179,7 @@ module.exports = {
   getRoutes,
   getAllTimes,
   getChecksums,
-  updateChecksums
+  updateChecksums,
+  addNotificationID,
+  getSubscriptions
 }
