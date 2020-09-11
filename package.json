@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node src/server",
     "watch": "nodemon",
-    "test": "qunit src/test.js",
+    "test": "qunit tests",
     "deploy": "gcloud app deploy --no-promote"
   },
   "dependencies": {
@@ -28,8 +28,10 @@
     "web-push": "^3.4.4"
   },
   "devDependencies": {
+    "ajv": "^6.12.4",
     "eslint": "^7.1.0",
     "nodemon": "^1.18.9",
-    "qunit": "^2.10.0"
+    "qunit": "^2.10.0",
+    "require-directory": "^2.1.1"
   }
 }
