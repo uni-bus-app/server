@@ -3,7 +3,7 @@
 const path = require('path');
 const requireDir = require('require-directory');
 const Ajv = require('ajv');
-const { getStops, getTimes } = require('./helpers');
+const { getStops, getTimes, getRoutes } = require('./helpers');
 
 const schemaURI = 'https://unib.us/schemas';
 const schemas = requireDir(module, path.join(__dirname, 'schemas'));
@@ -23,9 +23,20 @@ QUnit.test('Times test', async assert => {
   const stops = await getStops();
   const times = await getTimes(stops[0]);
   assert.ok(Array.isArray(times), 'Expect the data to be an array');
+  console.log(times)
   times.forEach(element => {
     const validate = ajv.getSchema(`${schemaURI}/time`);
     const valid = validate(element);
     assert.ok(valid, 'Check the structure of the times matches the schema')
+  });
+});
+
+QUnit.test('Routes test', async assert => {
+  const routes = await getRoutes();
+  assert.ok(Array.isArray(routes), 'Expect the data to be an array');
+  routes.forEach(element => {
+    const validate = ajv.getSchema(`${schemaURI}/route`);
+    const valid = validate(element);
+    assert.ok(valid, 'Check the structure of the routes matches the schema')
   });
 });
