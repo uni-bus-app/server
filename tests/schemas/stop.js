@@ -16,10 +16,12 @@ module.exports = {
         _longitude: {
           type: "number"
         }
-      }
+      },
+      required: ['_latitude', '_longitude']
     },
     routeOrder: {
       type: "number"
     }
-  }
+  },
+  required: ['name', 'location', 'routeOrder']
 }
