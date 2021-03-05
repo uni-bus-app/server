@@ -8,7 +8,7 @@
     "start:dev": "nodemon",
     "build": "rimraf ./build && tsc",
     "watch": "nodemon",
-    "test": "qunit tests",
+    "test": "qunit src/tests",
     "deploy": "gcloud app deploy --no-promote"
   },
   "dependencies": {
