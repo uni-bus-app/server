@@ -19,6 +19,7 @@ import {
   getRoutePath,
   syncDB,
 } from './firestore';
+import { getDirections } from './directions';
 updateChecksums();
 
 async function getStopsAPI(req: Request, res: Response, next: NextFunction) {
@@ -69,6 +70,14 @@ async function syncLocalDBAPI(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+async function getDirectionsAPI(req: Request, res: Response, next: NextFunction) {
+  try {
+    res.send(await getDirections(req.body));
+  } catch (error) {
+    next(error);
+  }
+}
+
 /******************************************
  * ROUTES
  * ************************************** */
@@ -78,6 +87,7 @@ app.get('/stops/:stopID/times', getTimesAPI);
 app.get('/routes', getRoutesAPI);
 app.get('/u1routepath', getRoutePathAPI);
 app.post('/sync', express.json(), syncLocalDBAPI);
+app.post('/directions', express.json(), getDirectionsAPI);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

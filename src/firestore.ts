@@ -128,6 +128,11 @@ export async function getRoutes(): Promise<Route[]> {
   return result;
 }
 
+export async function getRoute(routeNumber: number): Promise<Route> {
+  const snapshot = await db.collection('routes').where('routeNumber', '==', routeNumber).get();
+  return {id: snapshot.docs[0].id, ...snapshot.docs[0].data()} as Route;
+}
+
 export async function getAllTimes(): Promise<Times[]> {
   const snapshot = await db.collection('times').get();
   let result: Times[] = [];
