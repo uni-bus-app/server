@@ -5,6 +5,7 @@ import { Time } from './models/time';
 import { Route } from './models/route';
 import { Stop } from './models/stop';
 import { Times } from './models/times';
+const { FieldValue } = firestore;
 
 const db = firestore();
 
@@ -129,8 +130,11 @@ export async function getRoutes(): Promise<Route[]> {
 }
 
 export async function getRoute(routeNumber: number): Promise<Route> {
-  const snapshot = await db.collection('routes').where('routeNumber', '==', routeNumber).get();
-  return {id: snapshot.docs[0].id, ...snapshot.docs[0].data()} as Route;
+  const snapshot = await db
+    .collection('routes')
+    .where('routeNumber', '==', routeNumber)
+    .get();
+  return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Route;
 }
 
 export async function getAllTimes(): Promise<Times[]> {
@@ -217,4 +221,13 @@ export async function syncDB(clientVersion: any): Promise<any> {
   } else {
     return { updates: false };
   }
+}
+
+export async function addTester(email: string): Promise<void> {
+  await db
+    .collection('testers')
+    .doc('zp15afN6ArheL8xt5cVM')
+    .update({
+      emails: FieldValue.arrayUnion(email),
+    });
 }
