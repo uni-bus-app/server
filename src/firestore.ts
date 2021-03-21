@@ -5,6 +5,7 @@ import { Time } from './models/time';
 import { Route } from './models/route';
 import { Stop } from './models/stop';
 import { Times } from './models/times';
+import { Message } from './models/message';
 const { FieldValue } = firestore;
 
 const db = firestore();
@@ -230,4 +231,15 @@ export async function addTester(email: string): Promise<void> {
     .update({
       emails: FieldValue.arrayUnion(email),
     });
+}
+
+export async function getMessages(): Promise<Message[]> {
+  const snapshot = await db.collection('messages').get();
+  const result: Message[] = [];
+  snapshot.forEach((doc) => {
+    const messageData = <Message>doc.data();
+    messageData.id = doc.id;
+    result.push(messageData);
+  });
+  return result;
 }

@@ -19,6 +19,7 @@ import {
   getRoutePath,
   syncDB,
   addTester,
+  getMessages,
 } from './firestore';
 import { getDirections } from './directions';
 updateChecksums();
@@ -95,8 +96,16 @@ async function nativeAppSignupAPI(
     next(error);
   }
 }
+
+async function getMessagesAPI(req: Request, res: Response, next: NextFunction) {
+  try {
+    const data = await getMessages();
+    res.send(data);
+  } catch (error) {
+    next(error);
   }
 }
+
 /******************************************
  * ROUTES
  * ************************************** */
@@ -108,6 +117,7 @@ app.get('/u1routepath', getRoutePathAPI);
 app.post('/sync', express.json(), syncLocalDBAPI);
 app.post('/directions', express.json(), getDirectionsAPI);
 app.post('/nativeapp/signup', express.json(), nativeAppSignupAPI);
+app.get('/messages', getMessagesAPI);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
