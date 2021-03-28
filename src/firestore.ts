@@ -171,26 +171,15 @@ export async function updateChecksums(): Promise<any> {
     .onSnapshot(() => {
       getStops().then((stops) => {
         const stopsHash = hash(stops, { respectType: false });
-        console.log(stopsHash);
         updateVersion({ stopsVersion: stopsHash });
       });
     });
   db.collection('times').onSnapshot(() => {
     getAllTimes().then((times) => {
-      const timesHash = hash(times);
-      console.log(timesHash);
+      const timesHash = hash(times, { unorderedArrays: true });
       updateVersion({ timesVersion: timesHash });
     });
   });
-  db.collection('routes')
-    .orderBy('routeNumber')
-    .onSnapshot(() => {
-      getRoutes().then((routes) => {
-        const routesHash = hash(routes);
-        console.log(routesHash);
-        updateVersion({ routesVersion: routesHash });
-      });
-    });
 }
 
 export async function getChecksums(): Promise<any> {
@@ -204,21 +193,18 @@ export async function getChecksums(): Promise<any> {
 
 export async function syncDB(clientVersion: any): Promise<any> {
   const versions = await getChecksums();
+  delete versions.routesVersion;
   let dataChanged = false;
-  console.log(clientVersion);
-  console.log(versions);
   Object.keys(versions).forEach((element: string) => {
     if (versions[element] !== clientVersion[element]) {
       dataChanged = true;
     }
   });
-  console.log(dataChanged);
   // If any checksums are different, resync the local db
   if (dataChanged) {
     const stops = await getStops();
     const times = await getAllTimes();
-    const routes = await getRoutes();
-    return { stops, times, routes, updates: true };
+    return { stops, times, updates: true };
   } else {
     return { updates: false };
   }
