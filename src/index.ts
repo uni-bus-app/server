@@ -11,10 +11,8 @@ admin.initializeApp({
 });
 import {
   updateChecksums,
-  getChecksums,
   getStops,
   getTimes,
-  getAllTimes,
   getRoutes,
   getRoutePath,
   syncDB,
