@@ -11,13 +11,13 @@ admin.initializeApp({
 });
 import {
   updateChecksums,
-  getChecksums,
   getStops,
   getTimes,
-  getAllTimes,
   getRoutes,
   getRoutePath,
   syncDB,
+  addTester,
+  getMessages,
 } from './firestore';
 import { getDirections } from './directions';
 updateChecksums();
@@ -70,9 +70,35 @@ async function syncLocalDBAPI(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function getDirectionsAPI(req: Request, res: Response, next: NextFunction) {
+async function getDirectionsAPI(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     res.send(await getDirections(req.body));
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function nativeAppSignupAPI(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    await addTester(req.body.email);
+    res.send({});
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getMessagesAPI(req: Request, res: Response, next: NextFunction) {
+  try {
+    const data = await getMessages();
+    res.send(data);
   } catch (error) {
     next(error);
   }
@@ -88,6 +114,8 @@ app.get('/routes', getRoutesAPI);
 app.get('/u1routepath', getRoutePathAPI);
 app.post('/sync', express.json(), syncLocalDBAPI);
 app.post('/directions', express.json(), getDirectionsAPI);
+app.post('/nativeapp/signup', express.json(), nativeAppSignupAPI);
+app.get('/messages', getMessagesAPI);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

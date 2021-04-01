@@ -5,6 +5,8 @@ import { Time } from './models/time';
 import { Route } from './models/route';
 import { Stop } from './models/stop';
 import { Times } from './models/times';
+import { Message } from './models/message';
+const { FieldValue } = firestore;
 
 const db = firestore();
 
@@ -129,8 +131,11 @@ export async function getRoutes(): Promise<Route[]> {
 }
 
 export async function getRoute(routeNumber: number): Promise<Route> {
-  const snapshot = await db.collection('routes').where('routeNumber', '==', routeNumber).get();
-  return {id: snapshot.docs[0].id, ...snapshot.docs[0].data()} as Route;
+  const snapshot = await db
+    .collection('routes')
+    .where('routeNumber', '==', routeNumber)
+    .get();
+  return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Route;
 }
 
 export async function getAllTimes(): Promise<Times[]> {
@@ -166,26 +171,15 @@ export async function updateChecksums(): Promise<any> {
     .onSnapshot(() => {
       getStops().then((stops) => {
         const stopsHash = hash(stops, { respectType: false });
-        console.log(stopsHash);
         updateVersion({ stopsVersion: stopsHash });
       });
     });
   db.collection('times').onSnapshot(() => {
     getAllTimes().then((times) => {
-      const timesHash = hash(times);
-      console.log(timesHash);
+      const timesHash = hash(times, { unorderedArrays: true });
       updateVersion({ timesVersion: timesHash });
     });
   });
-  db.collection('routes')
-    .orderBy('routeNumber')
-    .onSnapshot(() => {
-      getRoutes().then((routes) => {
-        const routesHash = hash(routes);
-        console.log(routesHash);
-        updateVersion({ routesVersion: routesHash });
-      });
-    });
 }
 
 export async function getChecksums(): Promise<any> {
@@ -199,22 +193,39 @@ export async function getChecksums(): Promise<any> {
 
 export async function syncDB(clientVersion: any): Promise<any> {
   const versions = await getChecksums();
+  delete versions.routesVersion;
   let dataChanged = false;
-  console.log(clientVersion);
-  console.log(versions);
   Object.keys(versions).forEach((element: string) => {
     if (versions[element] !== clientVersion[element]) {
       dataChanged = true;
     }
   });
-  console.log(dataChanged);
   // If any checksums are different, resync the local db
   if (dataChanged) {
     const stops = await getStops();
     const times = await getAllTimes();
-    const routes = await getRoutes();
-    return { stops, times, routes, updates: true };
+    return { stops, times, updates: true };
   } else {
     return { updates: false };
   }
+}
+
+export async function addTester(email: string): Promise<void> {
+  await db
+    .collection('testers')
+    .doc('zp15afN6ArheL8xt5cVM')
+    .update({
+      emails: FieldValue.arrayUnion(email),
+    });
+}
+
+export async function getMessages(): Promise<Message[]> {
+  const snapshot = await db.collection('messages').get();
+  const result: Message[] = [];
+  snapshot.forEach((doc) => {
+    const messageData = <Message>doc.data();
+    messageData.id = doc.id;
+    result.push(messageData);
+  });
+  return result;
 }
