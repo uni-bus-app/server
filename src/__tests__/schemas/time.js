@@ -1,8 +1,8 @@
 module.exports = {
-  $schema: "http://json-schema.org/draft-07/schema#",
-  $id: "https://unib.us/schemas/time",
-  title: "Time",
-  type: "object",
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  $id: 'https://unib.us/schemas/time',
+  title: 'Time',
+  type: 'object',
   properties: {
     routeNumber: {
       type: 'number',
@@ -12,4 +12,4 @@ module.exports = {
     },
   },
   required: ['routeNumber', 'scheduled'],
-}
+};
