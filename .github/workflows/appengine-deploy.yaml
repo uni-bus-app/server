@@ -19,6 +19,7 @@ jobs:
         run: CI='' npm run build
       - name: Start server
         run: npm run start
+        timeout-minutes: 1
       - name: Test
         run: npm run test
       - id: deploy
