@@ -8,7 +8,7 @@
     "start:dev": "nodemon",
     "build": "rimraf ./build && tsc",
     "watch": "nodemon",
-    "test": "jest ./src/__tests__/index",
+    "test": "npm start & jest ./src/__tests__/index",
     "gcp-build": "tsc",
     "deploy": "gcloud app deploy --no-promote"
   },
