@@ -19,6 +19,12 @@ jobs:
         run: CI='' npm run build
       - name: Test
         run: npm run test
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
       - id: deploy
         uses: google-github-actions/deploy-appengine@main
         with:
