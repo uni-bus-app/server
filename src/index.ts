@@ -6,8 +6,8 @@ import { serviceAccount } from './serviceAccount';
 const app = express().use(cors());
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  // credential: admin.credential.applicationDefault()
+  // credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.applicationDefault(),
 });
 import {
   updateChecksums,
