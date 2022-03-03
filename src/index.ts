@@ -1,14 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import admin from 'firebase-admin';
-import { serviceAccount } from './serviceAccount';
-
-const app = express().use(cors());
-
-admin.initializeApp({
-  // credential: admin.credential.cert(serviceAccount),
-  credential: admin.credential.applicationDefault(),
-});
+import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
 import {
   updateChecksums,
   getStops,
@@ -20,6 +12,13 @@ import {
   getMessages,
 } from './firestore';
 import { getDirections } from './directions';
+import 'dotenv/config';
+import { serviceAccount } from './serviceAccount';
+
+const app = express().use(cors());
+
+initializeApp({ credential: cert(serviceAccount) });
+
 updateChecksums();
 
 async function getStopsAPI(req: Request, res: Response, next: NextFunction) {

@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 // import { getStopsAndTimes } from 'uopdf';
 import hash from 'object-hash';
 import { Time } from './models/time';
@@ -6,9 +6,6 @@ import { Route } from './models/route';
 import { Stop } from './models/stop';
 import { Times } from './models/times';
 import { Message } from './models/message';
-const { FieldValue } = firestore;
-
-const db = firestore();
 
 // export async function parseStops(): Promise<string[]> {
 //   // const result = await getStopsAndTimes('u1.pdf', null);
@@ -97,7 +94,10 @@ const db = firestore();
 // }
 
 export async function getStops(): Promise<Stop[]> {
-  const snapshot = await db.collection('stops').orderBy('routeOrder').get();
+  const snapshot = await getFirestore()
+    .collection('stops')
+    .orderBy('routeOrder')
+    .get();
   const result: Stop[] = [];
   snapshot.forEach((doc) => {
     const stopData = <Stop>doc.data();
@@ -108,7 +108,7 @@ export async function getStops(): Promise<Stop[]> {
 }
 
 export async function getTimes(stopID: string): Promise<Time[]> {
-  const snapshot = await db
+  const snapshot = await getFirestore()
     .collection('times')
     .where('stopID', '==', stopID)
     .get();
@@ -120,7 +120,10 @@ export async function getTimes(stopID: string): Promise<Time[]> {
 }
 
 export async function getRoutes(): Promise<Route[]> {
-  const snapshot = await db.collection('routes').orderBy('routeNumber').get();
+  const snapshot = await getFirestore()
+    .collection('routes')
+    .orderBy('routeNumber')
+    .get();
   const result: Route[] = [];
   snapshot.forEach((doc) => {
     const routeData = <Route>doc.data();
@@ -131,7 +134,7 @@ export async function getRoutes(): Promise<Route[]> {
 }
 
 export async function getRoute(routeNumber: number): Promise<Route> {
-  const snapshot = await db
+  const snapshot = await getFirestore()
     .collection('routes')
     .where('routeNumber', '==', routeNumber)
     .get();
@@ -139,7 +142,7 @@ export async function getRoute(routeNumber: number): Promise<Route> {
 }
 
 export async function getAllTimes(): Promise<Times[]> {
-  const snapshot = await db.collection('times').get();
+  const snapshot = await getFirestore().collection('times').get();
   let result: Times[] = [];
   snapshot.forEach((doc) => {
     const timesData = <Times>doc.data();
@@ -151,7 +154,7 @@ export async function getAllTimes(): Promise<Times[]> {
 
 export async function getRoutePath(): Promise<any> {
   let result;
-  const snapshot = await db.collection('routepath').get();
+  const snapshot = await getFirestore().collection('routepath').get();
   snapshot.forEach((doc) => {
     result = doc.data().path;
   });
@@ -159,14 +162,15 @@ export async function getRoutePath(): Promise<any> {
 }
 
 export async function updateVersion(versionInfo: any): Promise<void> {
-  const snapshot = await db.collection('version').get();
+  const snapshot = await getFirestore().collection('version').get();
   snapshot.forEach((element) => {
     element.ref.update(versionInfo);
   });
 }
 
 export async function updateChecksums(): Promise<any> {
-  db.collection('stops')
+  getFirestore()
+    .collection('stops')
     .orderBy('routeOrder')
     .onSnapshot(() => {
       getStops().then((stops) => {
@@ -174,16 +178,18 @@ export async function updateChecksums(): Promise<any> {
         updateVersion({ stopsVersion: stopsHash });
       });
     });
-  db.collection('times').onSnapshot(() => {
-    getAllTimes().then((times) => {
-      const timesHash = hash(times, { unorderedArrays: true });
-      updateVersion({ timesVersion: timesHash });
+  getFirestore()
+    .collection('times')
+    .onSnapshot(() => {
+      getAllTimes().then((times) => {
+        const timesHash = hash(times, { unorderedArrays: true });
+        updateVersion({ timesVersion: timesHash });
+      });
     });
-  });
 }
 
 export async function getChecksums(): Promise<any> {
-  const snapshot = await db.collection('version').get();
+  const snapshot = await getFirestore().collection('version').get();
   let result;
   snapshot.forEach((doc) => {
     result = doc.data();
@@ -211,7 +217,7 @@ export async function syncDB(clientVersion: any): Promise<any> {
 }
 
 export async function addTester(email: string): Promise<void> {
-  await db
+  await getFirestore()
     .collection('testers')
     .doc('zp15afN6ArheL8xt5cVM')
     .update({
@@ -220,7 +226,7 @@ export async function addTester(email: string): Promise<void> {
 }
 
 export async function getMessages(): Promise<Message[]> {
-  const snapshot = await db.collection('messages').get();
+  const snapshot = await getFirestore().collection('messages').get();
   const result: Message[] = [];
   snapshot.forEach((doc) => {
     const messageData = <Message>doc.data();

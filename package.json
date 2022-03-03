@@ -15,8 +15,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dayjs": "^1.10.4",
+    "dotenv": "^16.0.0",
     "express": "~4.16.1",
-    "firebase-admin": "^9.6.0",
+    "firebase-admin": "^10.0.2",
     "googleapis": "^52.1.0",
     "node-fetch": "^2.6.0",
     "object-hash": "^2.0.3"
