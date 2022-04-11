@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 const localUrl = 'http://localhost:8080';
 
-const apiCall = (path, body) => {
+const apiCall = async (path, body) => {
   const reqInit = body
     ? {
         method: 'POST',
