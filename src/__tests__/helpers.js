@@ -9,7 +9,7 @@ const apiCall = async (path, body) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(versions),
+        body: JSON.stringify(body),
       }
     : undefined;
   const res = await fetch(`${localUrl}${path}`, reqInit);
@@ -18,7 +18,7 @@ const apiCall = async (path, body) => {
 
 const getStops = () => apiCall('/stops');
 
-const getTimes = (stop) => apiCall(`${localUrl}/stops/${stop.id}/times`);
+const getTimes = (stop) => apiCall(`/stops/${stop.id}/times`);
 
 const getRoutes = () => apiCall('/routes');
 
