@@ -2,31 +2,27 @@ const fetch = require('node-fetch');
 
 const localUrl = 'http://localhost:8080';
 
-async function getStops() {
-  const res = await fetch(`${localUrl}/stops`);
+const apiCall = (path, body) => {
+  const reqInit = body
+    ? {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(versions),
+      }
+    : undefined;
+  const res = await fetch(`${localUrl}${path}`, reqInit);
   return await res.json();
-}
+};
 
-async function getTimes(stop) {
-  const res = await fetch(`${localUrl}/stops/${stop.id}/times`);
-  return await res.json();
-}
+const getStops = () => apiCall('/stops');
 
-async function getRoutes() {
-  const res = await fetch(`${localUrl}/routes`);
-  return await res.json();
-}
+const getTimes = (stop) => apiCall(`${localUrl}/stops/${stop.id}/times`);
 
-async function sync(versions) {
-  const res = await fetch(`${localUrl}/sync`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(versions),
-  });
-  return await res.json();
-}
+const getRoutes = () => apiCall('/routes');
+
+const sync = (versions) => apiCall('/sync', versions);
 
 module.exports = {
   getStops,

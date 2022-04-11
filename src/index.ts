@@ -1,122 +1,20 @@
-import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
-import {
-  updateChecksums,
-  getStops,
-  getTimes,
-  getRoutes,
-  getRoutePath,
-  syncDB,
-  addTester,
-  getMessages,
-} from './firestore';
-import { getDirections } from './directions';
 import 'dotenv/config';
+import express from 'express';
+import { cert, initializeApp } from 'firebase-admin/app';
+import db from './db';
+import routes from './routes';
 import { serviceAccount } from './serviceAccount';
-
-const app = express().use(cors());
 
 initializeApp({ credential: cert(serviceAccount) });
 
-updateChecksums();
+db.updateChecksums();
 
-async function getStopsAPI(req: Request, res: Response, next: NextFunction) {
-  try {
-    const stops = await getStops();
-    res.send(stops);
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getTimesAPI(req: Request, res: Response, next: NextFunction) {
-  try {
-    const times = await getTimes(req.params.stopID);
-    res.send(times);
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getRoutesAPI(req: Request, res: Response, next: NextFunction) {
-  try {
-    const routes = await getRoutes();
-    res.send(routes);
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getRoutePathAPI(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const routePath = await getRoutePath();
-    res.send(routePath);
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function syncLocalDBAPI(req: Request, res: Response, next: NextFunction) {
-  try {
-    res.send(await syncDB(req.body));
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getDirectionsAPI(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    res.send(await getDirections(req.body));
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function nativeAppSignupAPI(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    await addTester(req.body.email);
-    res.send({});
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getMessagesAPI(req: Request, res: Response, next: NextFunction) {
-  try {
-    const data = await getMessages();
-    res.send(data);
-  } catch (error) {
-    next(error);
-  }
-}
-
-/******************************************
- * ROUTES
- * ************************************** */
-
-app.get('/stops', getStopsAPI);
-app.get('/stops/:stopID/times', getTimesAPI);
-app.get('/routes', getRoutesAPI);
-app.get('/u1routepath', getRoutePathAPI);
-app.post('/sync', express.json(), syncLocalDBAPI);
-app.post('/directions', express.json(), getDirectionsAPI);
-app.post('/nativeapp/signup', express.json(), nativeAppSignupAPI);
-app.get('/messages', getMessagesAPI);
-
+const app = express().use(cors());
 const PORT = process.env.PORT || 8080;
+
+app.use(routes);
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
