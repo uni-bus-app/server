@@ -1,11 +1,11 @@
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
-import { applicationDefault, initializeApp } from 'firebase-admin/app';
+import { initializeApp } from 'firebase-admin/app';
 import db from './db';
 import routes from './routes';
 
-initializeApp({ credential: applicationDefault() });
+initializeApp();
 
 db.updateChecksums();
 
