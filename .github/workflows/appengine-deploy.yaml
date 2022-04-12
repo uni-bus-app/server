@@ -14,8 +14,10 @@ jobs:
       - id: 'auth'
         uses: google-github-actions/auth@v0
         with:
-          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
-          export_environment_variables: true
+          workload_identity_provider: 'projects/878954295159/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider'
+          service_account: 'gh-actions@unibus-app.iam.gserviceaccount.com'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -25,7 +27,7 @@ jobs:
       - name: Build
         run: CI='' npm run build
       - name: Test
-        run: npm run test
+        run: GOOGLE_CREDENTIALS='${{ secrets.GOOGLE_CREDENTIALS }}' npm run test
       - id: deploy
         uses: google-github-actions/deploy-appengine@v0
         with:
