@@ -12,9 +12,14 @@ const getStops = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const getTimes = async (req: Request, res: Response, next: NextFunction) => {
+  const { stopID } = req.params;
   try {
-    const times = await db.getTimes(req.params.stopID);
-    res.send(times);
+    const times = await db.getTimes(stopID);
+    if (times) {
+      res.send(times);
+    } else {
+      res.status(404).send({ message: 'Invalid stop ID' });
+    }
   } catch (error) {
     next(error);
   }
@@ -43,8 +48,9 @@ const getRoutePath = async (
 };
 
 const syncLocalDB = async (req: Request, res: Response, next: NextFunction) => {
+  const { body } = req;
   try {
-    res.send(await db.syncDB(req.body));
+    res.send(await db.syncDB(body));
   } catch (error) {
     next(error);
   }
@@ -55,21 +61,9 @@ const getDirections = async (
   res: Response,
   next: NextFunction
 ) => {
+  const { body } = req;
   try {
-    res.send(await directionsService.getDirections(req.body));
-  } catch (error) {
-    next(error);
-  }
-};
-
-const nativeAppSignup = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    await db.addTester(req.body.email);
-    res.send({});
+    res.send(await directionsService.getDirections(body));
   } catch (error) {
     next(error);
   }
@@ -91,6 +85,5 @@ export default {
   getRoutePath,
   syncLocalDB,
   getDirections,
-  nativeAppSignup,
   getMessages,
 };

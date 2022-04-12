@@ -1,4 +1,4 @@
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
 import hash from 'object-hash';
 import { Message, Route, Stop, Time, Times } from '../types';
 
@@ -124,15 +124,6 @@ const syncDB = async (clientVersion: any): Promise<any> => {
   }
 };
 
-const addTester = async (email: string): Promise<void> => {
-  await getFirestore()
-    .collection('testers')
-    .doc('zp15afN6ArheL8xt5cVM')
-    .update({
-      emails: FieldValue.arrayUnion(email),
-    });
-};
-
 const getMessages = async (): Promise<Message[]> => {
   const snapshot = await getFirestore().collection('messages').get();
   const result: Message[] = [];
@@ -151,7 +142,6 @@ export default {
   getRoute,
   getRoutePath,
   syncDB,
-  addTester,
   getMessages,
   updateChecksums,
 };

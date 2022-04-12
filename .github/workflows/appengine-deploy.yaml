@@ -15,7 +15,7 @@ jobs:
         uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: 'projects/878954295159/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider'
-          service_account: 'gh-actions@unibus-app.iam.gserviceaccount.com'
+          service_account: 'github-actions-app-engine@unibus-app.iam.gserviceaccount.com'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
       - name: Set up Node.js ${{ matrix.node-version }}

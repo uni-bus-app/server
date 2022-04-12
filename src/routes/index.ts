@@ -9,7 +9,6 @@ router.get('/routes', controllers.getRoutes);
 router.get('/u1routepath', controllers.getRoutePath);
 router.post('/sync', express.json(), controllers.syncLocalDB);
 router.post('/directions', express.json(), controllers.getDirections);
-router.post('/nativeapp/signup', express.json(), controllers.nativeAppSignup);
 router.get('/messages', controllers.getMessages);
 
 export default router;
