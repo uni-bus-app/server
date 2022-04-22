@@ -1,6 +1,6 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import hash from 'object-hash';
-import { Message, Route, Stop, Time, Times } from '../types';
+import { Message, Route, Stop, Times } from '../types';
 
 const getStops = async (): Promise<Stop[]> => {
   const snapshot = await getFirestore()
@@ -16,14 +16,38 @@ const getStops = async (): Promise<Stop[]> => {
   return result;
 };
 
-const getTimes = async (stopID: string): Promise<Time[]> => {
-  const snapshot = await getFirestore()
+const getTimes = async (
+  stopID: string,
+  day?: number,
+  rollover?: boolean
+): Promise<any[]> => {
+  let query = getFirestore()
+    .collection('times')
+    .where('stopID', '==', stopID)
+    .where('service', '==', 'u1');
+  if (day) {
+    query = query.where('days', 'array-contains', day);
+  }
+  if (rollover) {
+    query = query.where('rollover', '==', true);
+  }
+  const snapshot = await query.get();
+  let result: any[] = [];
+  snapshot.forEach((doc) => {
+    result.unshift(...doc.data().times);
+  });
+  return result;
+};
+
+const getTimesOld = async (stopID: string): Promise<any[]> => {
+  // TODO remove
+  const res = await getFirestore()
     .collection('times')
     .where('stopID', '==', stopID)
     .get();
-  let result: Time[];
-  snapshot.forEach((doc) => {
-    result = doc.data().times;
+  let result: any[] = [];
+  res.forEach((doc) => {
+    result.unshift(...doc.data().times);
   });
   return result;
 };
@@ -138,6 +162,7 @@ const getMessages = async (): Promise<Message[]> => {
 export default {
   getStops,
   getTimes,
+  getTimesOld,
   getRoutes,
   getRoute,
   getRoutePath,

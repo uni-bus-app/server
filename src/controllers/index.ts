@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import db from '../db';
-import { directionsService } from '../services';
+import { directionsService, timetableService } from '../services';
 
 const getStops = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -13,8 +13,10 @@ const getStops = async (req: Request, res: Response, next: NextFunction) => {
 
 const getTimes = async (req: Request, res: Response, next: NextFunction) => {
   const { stopID } = req.params;
+  const { date } = req.query;
+  console.log(date);
   try {
-    const times = await db.getTimes(stopID);
+    const times = await timetableService.getTimes(stopID, date?.toString());
     if (times) {
       res.send(times);
     } else {
@@ -78,6 +80,19 @@ const getMessages = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const getServiceUpdates = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await timetableService.getServiceUpdates();
+    res.send(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getStops,
   getTimes,
@@ -86,4 +101,5 @@ export default {
   syncLocalDB,
   getDirections,
   getMessages,
+  getServiceUpdates,
 };

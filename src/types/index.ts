@@ -8,6 +8,7 @@ export interface Stop {
 export interface Time {
   routeNumber: number;
   scheduled: string;
+  scheduledDeparture?: string;
 }
 
 export interface Route {

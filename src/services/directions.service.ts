@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from 'dayjs';
 import fetch from 'node-fetch';
 import db from '../db';
+import { timetableService } from '.';
 import { DirectionsResponse, Stop } from '../types';
 
 const Deg2Rad = (deg: number) => (deg * Math.PI) / 180;
@@ -214,7 +215,7 @@ const getDirections = async (req: any): Promise<DirectionsResponse> => {
   const closest = getClosest(routePath, departureStop);
   const closest1 = getClosest(routePath, arrivalStop);
 
-  const times = await db.getTimes(departureStop.id);
+  const times = await timetableService.getTimes(departureStop.id);
 
   const currentTime = dayjs();
 
@@ -318,7 +319,7 @@ const getDirections = async (req: any): Promise<DirectionsResponse> => {
     );
     busRoutes.push(route2);
 
-    const libTimes = await db.getTimes(stops[0].id);
+    const libTimes = await timetableService.getTimes(stops[0].id);
 
     let departureTime1: Dayjs;
     let routeNumber12;
