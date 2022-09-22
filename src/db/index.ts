@@ -76,6 +76,27 @@ const getRoute = async (routeNumber: number): Promise<Route> => {
 const getAllTimes = async (): Promise<Times[]> => {
   const snapshot = await getFirestore().collection('times').get();
   let result: Times[] = [];
+  let rollover: any = {};
+  snapshot.forEach((doc) => {
+    const timesData = <Times>doc.data();
+    timesData.id = doc.id;
+    if ((timesData as any).rollover === true) {
+      rollover[timesData.stopID] = timesData;
+    } else {
+      result.push(timesData);
+    }
+  });
+  result.forEach((item) => {
+    if (rollover[item.stopID]) {
+      item.times.push(...rollover[item.stopID].times);
+    }
+  });
+  return result;
+};
+
+const getAllTimes1 = async (): Promise<Times[]> => {
+  const snapshot = await getFirestore().collection('times').get();
+  let result: Times[] = [];
   snapshot.forEach((doc) => {
     const timesData = <Times>doc.data();
     timesData.id = doc.id;
@@ -118,6 +139,45 @@ const updateChecksums = async (): Promise<any> => {
         updateVersion({ timesVersion: timesHash });
       });
     });
+  // const snapshot = await getFirestore().collection('times').get();
+  // snapshot.forEach(async (item) => {
+  //   const data = item.data();
+
+  //   const times = data.times.map((item: any) => ({
+  //     ...item,
+  //     destination:
+  //       item.routeNumber === 48 ? 'Fratton Bridge' : 'University Library',
+  //   }));
+  //   console.log(times);
+  //   item.ref.update({ times });
+  //   // if (!data.rollover) {
+  //   // if (data.times[data.times.length - 1].routeNumber === 48) {
+  //   // console.log(data);
+  //   // const rolloverTime = data.times.pop();
+  //   // const rolloverTimes = {
+  //   //   stopID: data.stopID,
+  //   //   rollover: true,
+  //   //   service: 'u1',
+  //   //   days: [2, 3, 4, 5, 6],
+  //   //   times: [rolloverTime],
+  //   // };
+  //   // console.log(rolloverTimes);
+  //   // await getFirestore().collection('times').add(rolloverTimes);
+  //   // }
+  //   // console.log({
+  //   //   rollover: false,
+  //   //   service: 'u1',
+  //   //   days: [1, 2, 3, 4, 5],
+  //   //   times: data.times,
+  //   // });
+  //   // item.ref.update({
+  //   //   rollover: false,
+  //   //   service: 'u1',
+  //   //   days: [1, 2, 3, 4, 5],
+  //   //   times: data.times,
+  //   // });
+  //   // }
+  // });
 };
 
 const getChecksums = async (): Promise<any> => {
@@ -129,7 +189,10 @@ const getChecksums = async (): Promise<any> => {
   return result;
 };
 
-const syncDB = async (clientVersion: any): Promise<any> => {
+const syncDB = async (
+  clientVersion: any,
+  newFormat?: boolean
+): Promise<any> => {
   const versions = await getChecksums();
   delete versions.routesVersion;
   let dataChanged = false;
@@ -141,8 +204,16 @@ const syncDB = async (clientVersion: any): Promise<any> => {
   // If any checksums are different, resync the local db
   if (dataChanged) {
     const stops = await getStops();
-    const times = await getAllTimes();
-    return { stops, times, updates: true };
+    const times = await (async () => {
+      if (newFormat) {
+        return await getAllTimes1();
+      } else {
+        return await getAllTimes();
+      }
+    })();
+    // const times = await getAllTimes();
+    // const times = await getAllTimes1();
+    return { stops, times, updates: true, versions };
   } else {
     return { updates: false };
   }

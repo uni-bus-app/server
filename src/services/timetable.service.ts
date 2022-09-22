@@ -1,6 +1,12 @@
 import dayjs, { Dayjs } from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import db from '../db';
 import { Time } from '../types';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('Europe/London');
 
 const getServiceUpdates = async () => {
   const messages = await db.getMessages();
@@ -9,9 +15,9 @@ const getServiceUpdates = async () => {
 
 const getCurrentTime = (date?: string): Dayjs => {
   if (date) {
-    return dayjs(date);
+    return dayjs(date).tz();
   } else {
-    return dayjs();
+    return dayjs().tz();
   }
 };
 
