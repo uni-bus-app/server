@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { parseTimetablePdf } from 'uopdf';
 import db from '../db';
 import { Time } from '../types';
 
@@ -86,4 +87,25 @@ const getTimes = async (stopID: string, date?: string): Promise<Time[]> => {
   }
 };
 
-export default { getServiceUpdates, getTimes };
+const getTimetables = async (id?: string) => {
+  return await db.getTimetables(id);
+};
+
+const insertTimesFromPDF = async (pdfFile: Buffer) => {
+  const stopIds = (await db.getStops()).map(({ id }) => id);
+  const timesDocs = await parseTimetablePdf(pdfFile, stopIds);
+  const timetableID = await db.insertTimetable(timesDocs);
+  return { timetableID, timesDocs };
+};
+
+const publishTimetable = async (timetableID: string) => {
+  await db.publishTimetable(timetableID);
+};
+
+export default {
+  getServiceUpdates,
+  getTimes,
+  getTimetables,
+  insertTimesFromPDF,
+  publishTimetable,
+};

@@ -104,6 +104,49 @@ const getServiceUpdates = async (
   }
 };
 
+const getTimetables = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await timetableService.getTimetables(req.params.id);
+    res.send(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const uploadTimetablePdf = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // console.log(req.files);
+    const { timetableID, timesDocs } =
+      await timetableService.insertTimesFromPDF((req.files.file as any).data);
+    res.send({ timetableID, timesDocs });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const publishTimetable = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id, action } = req.query;
+  try {
+    if (action === 'publish' && typeof id === 'string') {
+      timetableService.publishTimetable(id);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getStops,
   getTimes,
@@ -113,4 +156,7 @@ export default {
   getClosestStop,
   getMessages,
   getServiceUpdates,
+  getTimetables,
+  uploadTimetablePdf,
+  publishTimetable,
 };
