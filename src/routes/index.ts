@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { Request, Response, Router } from 'express';
 import controllers from '../controllers';
 import fileUpload from 'express-fileupload';
 
@@ -9,7 +9,7 @@ router.get('/stops', controllers.getStops);
 router.get('/stops/:stopID/times', controllers.getTimes);
 router.get('/routes', controllers.getRoutes);
 router.get('/u1routepath', controllers.getRoutePath);
-router.post('/sync', express.json(), controllers.syncLocalDB);
+router.post('/sync', express.json() as any, controllers.syncLocalDB);
 // router.post('/stops', express.json(), controllers.getClosestStop);
 router.get('/messages', controllers.getMessages);
 

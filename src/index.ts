@@ -8,14 +8,12 @@ import routes from './routes';
 import { timetableService } from './services';
 const { GITHUB_ACTION, GOOGLE_CREDENTIALS } = process.env;
 
-// const options = GITHUB_ACTION
-//   ? {
-//       credential: cert(JSON.parse(GOOGLE_CREDENTIALS)),
-//     }
-//   : undefined;
-// initializeApp(options);
-
-initializeApp();
+const options = GITHUB_ACTION
+  ? {
+      credential: cert(JSON.parse(GOOGLE_CREDENTIALS)),
+    }
+  : undefined;
+initializeApp(options);
 
 db.updateChecksums();
 
