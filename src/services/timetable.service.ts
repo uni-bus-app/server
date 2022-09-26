@@ -1,6 +1,13 @@
 import dayjs, { Dayjs } from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+import { parseTimetablePdf } from '@uni-bus-app/uopdf';
 import db from '../db';
 import { Time } from '../types';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('Europe/London');
 
 const getServiceUpdates = async () => {
   const messages = await db.getMessages();
@@ -9,9 +16,9 @@ const getServiceUpdates = async () => {
 
 const getCurrentTime = (date?: string): Dayjs => {
   if (date) {
-    return dayjs(date);
+    return dayjs(date).tz();
   } else {
-    return dayjs();
+    return dayjs().tz();
   }
 };
 
@@ -80,4 +87,25 @@ const getTimes = async (stopID: string, date?: string): Promise<Time[]> => {
   }
 };
 
-export default { getServiceUpdates, getTimes };
+const getTimetables = async (id?: string) => {
+  return await db.getTimetables(id);
+};
+
+const insertTimesFromPDF = async (pdfFile: Buffer) => {
+  const stopIds = (await db.getStops()).map(({ id }) => id);
+  const timesDocs = await parseTimetablePdf(pdfFile, stopIds);
+  const timetableID = await db.insertTimetable(timesDocs);
+  return { timetableID, timesDocs };
+};
+
+const publishTimetable = async (timetableID: string) => {
+  await db.publishTimetable(timetableID);
+};
+
+export default {
+  getServiceUpdates,
+  getTimes,
+  getTimetables,
+  insertTimesFromPDF,
+  publishTimetable,
+};

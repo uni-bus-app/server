@@ -3,11 +3,22 @@ import db from '../db';
 import { directionsService, timetableService } from '../services';
 
 const getStops = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const stops = await db.getStops();
-    res.send(stops);
-  } catch (error) {
-    next(error);
+  const { lat, lng } = req.query;
+  console.log(lat, lng);
+  if (lat && lng) {
+    try {
+      const stops = await directionsService.getClosestStop({ lat, lng });
+      res.send(stops);
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    try {
+      const stops = await db.getStops();
+      res.send(stops);
+    } catch (error) {
+      next(error);
+    }
   }
 };
 
@@ -50,22 +61,22 @@ const getRoutePath = async (
 };
 
 const syncLocalDB = async (req: Request, res: Response, next: NextFunction) => {
-  const { body } = req;
+  const { body, query } = req;
   try {
-    res.send(await db.syncDB(body));
+    res.send(await db.syncDB(body, !!query.new_format));
   } catch (error) {
     next(error);
   }
 };
 
-const getDirections = async (
+const getClosestStop = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { body } = req;
   try {
-    res.send(await directionsService.getDirections(body));
+    res.send(await directionsService.getClosestStop(body.position));
   } catch (error) {
     next(error);
   }
@@ -93,13 +104,59 @@ const getServiceUpdates = async (
   }
 };
 
+const getTimetables = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await timetableService.getTimetables(req.params.id);
+    res.send(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const uploadTimetablePdf = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // console.log(req.files);
+    const { timetableID, timesDocs } =
+      await timetableService.insertTimesFromPDF((req.files.file as any).data);
+    res.send({ timetableID, timesDocs });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const publishTimetable = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id, action } = req.query;
+  try {
+    if (action === 'publish' && typeof id === 'string') {
+      timetableService.publishTimetable(id);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getStops,
   getTimes,
   getRoutes,
   getRoutePath,
   syncLocalDB,
-  getDirections,
+  getClosestStop,
   getMessages,
   getServiceUpdates,
+  getTimetables,
+  uploadTimetablePdf,
+  publishTimetable,
 };

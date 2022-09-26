@@ -2,8 +2,10 @@ import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
 import { cert, initializeApp } from 'firebase-admin/app';
+import { readFileSync } from 'fs';
 import db from './db';
 import routes from './routes';
+import { timetableService } from './services';
 const { GITHUB_ACTION, GOOGLE_CREDENTIALS } = process.env;
 
 const options = GITHUB_ACTION

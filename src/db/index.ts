@@ -1,5 +1,6 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import hash from 'object-hash';
+import { TimesDoc } from '@uni-bus-app/uopdf/lib/types';
 import { Message, Route, Stop, Times } from '../types';
 
 const getStops = async (): Promise<Stop[]> => {
@@ -76,6 +77,27 @@ const getRoute = async (routeNumber: number): Promise<Route> => {
 const getAllTimes = async (): Promise<Times[]> => {
   const snapshot = await getFirestore().collection('times').get();
   let result: Times[] = [];
+  let rollover: any = {};
+  snapshot.forEach((doc) => {
+    const timesData = <Times>doc.data();
+    timesData.id = doc.id;
+    if ((timesData as any).rollover === true) {
+      rollover[timesData.stopID] = timesData;
+    } else {
+      result.push(timesData);
+    }
+  });
+  result.forEach((item) => {
+    if (rollover[item.stopID]) {
+      item.times.push(...rollover[item.stopID].times);
+    }
+  });
+  return result;
+};
+
+const getAllTimes1 = async (): Promise<Times[]> => {
+  const snapshot = await getFirestore().collection('times').get();
+  let result: Times[] = [];
   snapshot.forEach((doc) => {
     const timesData = <Times>doc.data();
     timesData.id = doc.id;
@@ -129,7 +151,10 @@ const getChecksums = async (): Promise<any> => {
   return result;
 };
 
-const syncDB = async (clientVersion: any): Promise<any> => {
+const syncDB = async (
+  clientVersion: any,
+  newFormat?: boolean
+): Promise<any> => {
   const versions = await getChecksums();
   delete versions.routesVersion;
   let dataChanged = false;
@@ -141,8 +166,16 @@ const syncDB = async (clientVersion: any): Promise<any> => {
   // If any checksums are different, resync the local db
   if (dataChanged) {
     const stops = await getStops();
-    const times = await getAllTimes();
-    return { stops, times, updates: true };
+    const times = await (async () => {
+      if (newFormat) {
+        return await getAllTimes1();
+      } else {
+        return await getAllTimes();
+      }
+    })();
+    // const times = await getAllTimes();
+    // const times = await getAllTimes1();
+    return { stops, times, updates: true, versions };
   } else {
     return { updates: false };
   }
@@ -159,6 +192,50 @@ const getMessages = async (): Promise<Message[]> => {
   return result;
 };
 
+const getTimetables = async (id?: string) => {
+  if (id) {
+    const snapshot = await getFirestore()
+      .collection('timetables')
+      .doc(id)
+      .get();
+    return snapshot.data().timesDocs;
+  }
+  const snapshot = await getFirestore().collection('timetables').get();
+  const ids = snapshot.docs.map((item) => item.id);
+  return ids;
+};
+
+const insertTimetable = async (timesDocs: TimesDoc[]): Promise<string> => {
+  const res = await getFirestore().collection('timetables').add({ timesDocs });
+  return res.id;
+};
+
+const insertTimes = async (timesDocs: TimesDoc[]) => {
+  const querySnapshot = await getFirestore().collection('times').get();
+  querySnapshot.docs.forEach((snapshot) => {
+    snapshot.ref.delete();
+  });
+
+  for await (const doc of timesDocs) {
+    await getFirestore().collection('times').add(doc);
+  }
+};
+
+const publishTimetable = async (timetableID: string): Promise<boolean> => {
+  const snapshot = await getFirestore()
+    .collection('timetables')
+    .doc(timetableID)
+    .get();
+  const doc = snapshot.data();
+  if (doc) {
+    const { timesDocs } = doc;
+    await insertTimes(timesDocs);
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export default {
   getStops,
   getTimes,
@@ -166,93 +243,10 @@ export default {
   getRoutes,
   getRoute,
   getRoutePath,
+  getTimetables,
+  insertTimetable,
+  publishTimetable,
   syncDB,
   getMessages,
   updateChecksums,
 };
-
-// export async function parseStops(): Promise<string[]> {
-//   // const result = await getStopsAndTimes('u1.pdf', null);
-//   return [];
-// }
-
-// export async function parseTimes(): Promise<string[][]> {
-//   // const result = await getStopsAndTimes('u1.pdf', null);
-//   const result = { stops: ['3'], times: ['3'] };
-//   const stopTimes: string[][] = [];
-//   const numStops = result.stops.length;
-//   for (let i = 0; i < numStops; i++) {
-//     const newStopTimes = result.times[i].concat(
-//       result.times[i + 12],
-//       result.times[i + 24]
-//     );
-//     stopTimes.push(newStopTimes);
-//   }
-//   return stopTimes;
-// }
-
-// export async function parseRoutes(): Promise<any> {
-//   const times = await parseTimes();
-//   const stops = await parseStops();
-//   const routes: any = [];
-//   for (let i = 0; i < times[0].length; i++) {
-//     routes[i] = [];
-//     times.forEach((element: any, n: number) => {
-//       routes[i].push({
-//         stop: stops[n],
-//         time: element[i],
-//       });
-//     });
-//   }
-//   return routes;
-// }
-
-// export async function insertStops(): Promise<any> {
-//   const stopNames = await parseStops();
-//   stopNames.pop();
-//   const batch = db.batch();
-//   stopNames.forEach((element: any, i: number) => {
-//     batch.set(db.collection('stops').doc(), { name: element, routeOrder: i });
-//   });
-//   await batch.commit();
-// }
-
-// export async function insertTimes(): Promise<any> {
-//   const stopTimes = await parseTimes();
-
-//   const stopTimesInfo: any = [];
-//   stopTimes.forEach((element, i: number) => {
-//     stopTimesInfo[i] = [];
-//     element.forEach((time: any, n: any) => {
-//       stopTimesInfo[i].push({ scheduled: time, routeNumber: n });
-//     });
-//   });
-
-//   const batch = db.batch();
-//   const times = await db.collection('times').get();
-//   times.docs.forEach((doc) => {
-//     batch.delete(doc.ref);
-//   });
-//   const snapshot = await db.collection('stops').orderBy('routeOrder').get();
-//   let i = 0;
-//   snapshot.forEach((doc) => {
-//     batch.set(db.collection('times').doc(), {
-//       stopID: doc.id,
-//       times: stopTimesInfo[i],
-//     });
-//     i++;
-//   });
-//   await batch.commit();
-// }
-
-// export async function insertRoutes(): Promise<any> {
-//   const batch = db.batch();
-//   const routes = await parseRoutes();
-//   routes.forEach((element: any, i: number) => {
-//     batch.set(db.collection('routes').doc(), {
-//       routeNumber: i,
-//       stops: element,
-//     });
-//   });
-//   await batch.commit();
-// }

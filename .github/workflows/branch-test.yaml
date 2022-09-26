@@ -12,12 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@uni-bus-app'
       - name: Install dependencies
         run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
         run: CI='' npm run build
       - name: Test
-        run: npm run test
+        run: GOOGLE_CREDENTIALS='${{ secrets.GOOGLE_CREDENTIALS }}' npm run test
