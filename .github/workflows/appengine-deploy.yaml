@@ -29,5 +29,4 @@ jobs:
         run: |
           gcloud run deploy unibus-api \
             --source .
-            --region europe-west2 \
-            --allow-unauthenticated
+            --region europe-west2
