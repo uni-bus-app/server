@@ -18,7 +18,7 @@ db.updateChecksums();
 const app = express().use(cors());
 const PORT = process.env.PORT || 8080;
 
-app.use(routes);
+app.use('/api', routes);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
