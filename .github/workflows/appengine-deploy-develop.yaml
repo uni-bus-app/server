@@ -16,7 +16,7 @@ jobs:
       - name: Authorise Google Cloud
         uses: google-github-actions/auth@main
         with:
-          service_account: ${{ secrets.GOOGLE_CREDENTIALS }}
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
           project_id: unibus-app
 
       - name: Set up Google Cloud SDK
@@ -29,5 +29,5 @@ jobs:
         run: |
           gcloud run deploy unibus-api-test \
             --source .
-            --region europe-west-1 \
+            --region europe-west2 \
             --allow-unauthenticated
