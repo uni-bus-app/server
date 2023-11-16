@@ -1,9 +1,6 @@
 name: Deploy to Google Cloud Run
 
-on:
-  push:
-    branches:
-      - master # Set your default branch
+'on': pull_request
 
 jobs:
   deploy:
@@ -27,6 +24,8 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy unibus-api \
-            --source .
-            --region europe-west2
+          gcloud run deploy unibus-api-test \
+            --source . \
+            --region europe-west2 \
+            --tag=$(echo "${GITHUB_REF_NAME}" | sed 's/^[^a-zA-Z]*//' | cut -c 1-30 | tr '[:upper:]' '[:lower:]')
+            --no-traffic
