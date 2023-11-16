@@ -10,6 +10,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Authorise Google Cloud
+        uses: google-github-actions/auth@main
+        with:
+          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          project_id: unibus-app
+
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@main
         with:
