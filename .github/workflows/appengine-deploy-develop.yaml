@@ -16,7 +16,7 @@ jobs:
       - name: Authorise Google Cloud
         uses: google-github-actions/auth@main
         with:
-          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          service_account: ${{ secrets.GOOGLE_CREDENTIALS }}
           project_id: unibus-app
 
       - name: Set up Google Cloud SDK
