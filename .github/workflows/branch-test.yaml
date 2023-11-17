@@ -20,4 +20,4 @@ jobs:
       - name: Test
         run: npm run test
         env:
-          MY_SECRET: ${{ secrets.GCP_SA_KEY }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
