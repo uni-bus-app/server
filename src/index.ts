@@ -4,11 +4,11 @@ import express from 'express';
 import { cert, initializeApp } from 'firebase-admin/app';
 import db from './db';
 import routes from './routes';
-const { GITHUB_ACTION, GOOGLE_CREDENTIALS } = process.env;
+const { GITHUB_ACTION, GCP_SA_KEY } = process.env;
 
 const options = GITHUB_ACTION
   ? {
-      credential: cert(JSON.parse(GOOGLE_CREDENTIALS)),
+      credential: cert(JSON.parse(GCP_SA_KEY)),
     }
   : undefined;
 initializeApp(options);
