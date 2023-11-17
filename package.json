@@ -20,6 +20,7 @@
     "firebase-admin": "^10.0.2",
     "googleapis": "^52.1.0",
     "node-fetch": "^2.6.0",
+    "object-hash": "^2.2.0",
     "supertest": "^6.3.3"
   },
   "devDependencies": {
