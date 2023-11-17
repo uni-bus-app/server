@@ -20,6 +20,8 @@ const PORT = process.env.PORT || 8080;
 
 app.use('/api', routes);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
+
+export { app, server };
