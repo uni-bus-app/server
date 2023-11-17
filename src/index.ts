@@ -7,7 +7,9 @@ import routes from './routes';
 
 initializeApp();
 
-db.updateChecksums();
+if (process.env.NODE_ENV === 'production') {
+  db.updateChecksums();
+}
 
 const app = express().use(cors());
 const PORT = process.env.PORT || 8080;

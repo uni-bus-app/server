@@ -6,6 +6,7 @@ import { Server } from 'http';
 import request from 'supertest';
 import { app, server } from '../index';
 const hash = require('object-hash');
+// import db from '../db'; // Adjust the path to your module
 
 const schemaURI = 'https://unib.us/schemas';
 const schemas = requireDir(module, path.join(__dirname, 'schemas'));
@@ -14,6 +15,18 @@ const ajv = new Ajv({
   allErrors: true,
   jsonPointers: true,
 });
+
+jest.mock('../db/index', () => {
+  const db = jest.requireActual('../db/index');
+  db.updateChecksums = jest.fn().mockResolvedValue('');
+  return db;
+});
+
+// jest.mock('../db', () => {
+//   return {
+//     updateChecksums: jest.fn().mockResolvedValue(null),
+//   };
+// });
 
 class IntegrationHelpers {
   public static appInstance?: Application;
@@ -39,15 +52,11 @@ class IntegrationHelpers {
 }
 
 describe('API Tests', () => {
-  let app: Application;
-
-  beforeAll(async () => {
-    app = await IntegrationHelpers.getApp();
-  });
+  // let app: Application;
 
   test('Stops test', async () => {
     const response = await request(app).get('/api/stops');
-    console.log(response);
+
     expect(Array.isArray(response.body)).toBe(true);
     response.body.forEach((element: any) => {
       const validate = ajv.getSchema(`${schemaURI}/stop`);
@@ -56,16 +65,18 @@ describe('API Tests', () => {
     });
   });
 
-  // test('Times test', async () => {
-  //   const stops = await getStops();
-  //   const times = await getTimes(stops.body[0]);
-  //   expect(Array.isArray(times.body)).toBe(true);
-  //   times.body.forEach((element: any) => {
-  //     const validate = ajv.getSchema(`${schemaURI}/time`);
-  //     const valid = validate(element);
-  //     expect(valid).toBe(true);
-  //   });
-  // });
+  test('Times test', async () => {
+    const stops = await request(app).get('/api/stops');
+    const times = await request(app).get(
+      `/api/stops/${stops.body[0].id}/times`
+    );
+    expect(Array.isArray(times.body)).toBe(true);
+    times.body.forEach((element: any) => {
+      const validate = ajv.getSchema(`${schemaURI}/time`);
+      const valid = validate(element);
+      expect(valid).toBe(true);
+    });
+  });
 
   // test('Routes test', async () => {
   //   const routes = await getRoutes();
@@ -77,8 +88,12 @@ describe('API Tests', () => {
   //   });
   // });
 
-  afterAll(async () => {
-    (await IntegrationHelpers.getServer()).close();
+  afterAll((done) => {
+    console.log('done');
+    server.close(() => {
+      console.log('done2');
+      done();
+    });
   });
 });
 
