@@ -1,17 +1,11 @@
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
-import { cert, initializeApp } from 'firebase-admin/app';
+import { initializeApp } from 'firebase-admin/app';
 import db from './db';
 import routes from './routes';
-const { GITHUB_ACTION, GCP_SA_KEY } = process.env;
 
-const options = GITHUB_ACTION
-  ? {
-      credential: cert(JSON.parse(GCP_SA_KEY)),
-    }
-  : undefined;
-initializeApp(options);
+initializeApp();
 
 db.updateChecksums();
 
