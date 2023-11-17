@@ -1,24 +1,16 @@
-const path = require('path');
-const requireDir = require('require-directory');
-const Ajv = require('ajv');
-import { Application } from 'express';
-import { Server } from 'http';
+import path from 'path';
+import requireDir from 'require-directory';
+import Ajv from 'ajv';
 import request from 'supertest';
-import { app, server } from '../index';
-const hash = require('object-hash');
+import { app, server } from './index';
+import hash from 'object-hash';
 
 const schemaURI = 'https://unib.us/schemas';
-const schemas = requireDir(module, path.join(__dirname, 'schemas'));
+const schemas = requireDir(module, path.join(__dirname, '__tests__/schemas'));
 const ajv = new Ajv({
   schemas: Object.values(schemas),
   allErrors: true,
   jsonPointers: true,
-});
-
-jest.mock('../db/index', () => {
-  const db = jest.requireActual('../db/index');
-  db.updateChecksums = jest.fn().mockResolvedValue('');
-  return db;
 });
 
 describe('API Tests', () => {
