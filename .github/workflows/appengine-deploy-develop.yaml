@@ -30,3 +30,8 @@ jobs:
           gcloud run deploy unibus-api-test \
             --source . \
             --region europe-west2
+      - name: Update Traffic
+        run: |
+          gcloud run services update-traffic unibus-api-test \
+            --to-latest \
+            --region europe-west2
