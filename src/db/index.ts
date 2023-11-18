@@ -142,7 +142,7 @@ const syncDB = async (clientVersion: any): Promise<any> => {
   if (dataChanged) {
     const stops = await getStops();
     const times = await getAllTimes();
-    return { stops, times, updates: true };
+    return { stops, times, updates: true, versions: versions };
   } else {
     return { updates: false };
   }
