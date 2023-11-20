@@ -18,15 +18,13 @@ const getVehicles = async () => {
     `https://data.bus-data.dft.gov.uk/api/v1/datafeed/11393/?api_key=${process.env.GOV_UK_API_KEY}&lineRef=U1&operatorRef=FHAM`
   );
   const text = await data.text();
-  const thing = await parseStringPromise(text);
-  console.log(thing);
+  const object = await parseStringPromise(text);
   const u1 =
-    thing.Siri.ServiceDelivery[0].VehicleMonitoringDelivery[0].VehicleActivity.filter(
+    object.Siri.ServiceDelivery[0].VehicleMonitoringDelivery[0].VehicleActivity.filter(
       (item: any) =>
         item.MonitoredVehicleJourney?.[0]?.LineRef?.[0]?.toLowerCase() === 'u1'
     );
   const simplifiedData = simplifyObject(u1);
-  console.log(simplifiedData);
   return simplifiedData;
 };
 
