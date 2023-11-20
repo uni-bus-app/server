@@ -111,7 +111,7 @@ function simplifyObject(obj: any) {
 const getVehicles = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await fetch(
-      'https://data.bus-data.dft.gov.uk/api/v1/datafeed/11393/?api_key=ac84395f00f22e5d729b2ca6ba5390fd7684af92&lineRef=U1&operatorRef=FHAM'
+      `https://data.bus-data.dft.gov.uk/api/v1/datafeed/11393/?api_key=${process.env.GOV_UK_API_KEY}&lineRef=U1&operatorRef=FHAM`
     );
     const text = await data.text();
     const thing = await parseStringPromise(text);
