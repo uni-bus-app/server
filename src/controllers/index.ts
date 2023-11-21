@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import db from '../db';
-import { directionsService, timetableService } from '../services';
+import {
+  directionsService,
+  liveTrackingService,
+  timetableService,
+} from '../services';
 
 const getStops = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -93,6 +97,15 @@ const getServiceUpdates = async (
   }
 };
 
+const getVehicles = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await liveTrackingService.getVehicles();
+    res.send(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getStops,
   getTimes,
@@ -102,4 +115,5 @@ export default {
   getDirections,
   getMessages,
   getServiceUpdates,
+  getVehicles,
 };

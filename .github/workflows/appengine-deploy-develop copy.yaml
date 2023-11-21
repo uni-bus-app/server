@@ -28,4 +28,5 @@ jobs:
             --source . \
             --region europe-west2 \
             --tag=$(echo "${GITHUB_HEAD_REF}" | sed 's/^[^a-zA-Z]*//' | cut -c 1-30 | tr '[:upper:]' '[:lower:]') \
-            --no-traffic
+            --no-traffic \
+            --set-env-vars GOV_UK_API_KEY=${{ secrets.GOV_UK_API_KEY }}

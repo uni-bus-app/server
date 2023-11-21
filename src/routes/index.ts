@@ -10,5 +10,6 @@ router.get('/u1routepath', controllers.getRoutePath);
 router.post('/sync', express.json() as any, controllers.syncLocalDB);
 router.post('/directions', express.json() as any, controllers.getDirections);
 router.get('/messages', controllers.getMessages);
+router.get('/vehicles', controllers.getVehicles);
 
 export default router;

@@ -29,7 +29,14 @@ jobs:
         run: |
           gcloud run deploy unibus-api-test \
             --source . \
+            --region europe-west2 \
+            --set-env-vars GOV_UK_API_KEY=${{ secrets.GOV_UK_API_KEY }}
+      - name: Update Traffic
+        run: |
+          gcloud run services update-traffic unibus-api-test \
+            --to-latest \
             --region europe-west2
+
       - name: Update Traffic
         run: |
           gcloud run services update-traffic unibus-api-test \

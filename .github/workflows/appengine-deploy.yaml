@@ -28,5 +28,6 @@ jobs:
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy unibus-api \
-            --source .
-            --region europe-west2
+            --source . \
+            --region europe-west2 \
+            --set-env-vars GOV_UK_API_KEY=${{ secrets.GOV_UK_API_KEY }}
