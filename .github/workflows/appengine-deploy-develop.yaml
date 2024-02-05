@@ -3,7 +3,7 @@ name: Deploy to Google Cloud Run
 on:
   push:
     branches:
-      - master # Set your default branch
+      - develop # Set your default branch
 
 jobs:
   deploy:
@@ -27,7 +27,18 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy unibus-api \
+          gcloud run deploy unibus-api-test \
             --source . \
             --region europe-west2 \
             --set-env-vars GOV_UK_API_KEY=${{ secrets.GOV_UK_API_KEY }}
+      - name: Update Traffic
+        run: |
+          gcloud run services update-traffic unibus-api-test \
+            --to-latest \
+            --region europe-west2
+
+      - name: Update Traffic
+        run: |
+          gcloud run services update-traffic unibus-api-test \
+            --to-latest \
+            --region europe-west2
